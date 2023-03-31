@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!-- Load d3.js version 7-->
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+
+  <!-- Title of the webpage -->
+  <title> Heatmap </title>
+
+  <!-- For CSS -->
+  <style>
+
+  </style>
+
+</head>
+
+<body>
+
+  <!-- Simple text heading-->
+  <h2>Spotify Song Feature Correlations</h2>
+
+  <!-- Create a div where the graph will take place -->
+  <div id="myDiv"></div>
+
+  <!-- Load color palettes -->
+  <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+
+  <script src="spearson.js"></script>
+
+  <!-- Start of JavaScript code -->
+  <script>
+
+    // Set the dimensions and margins of the graph
+    const margin = { top: 75, right: 0, bottom: 30, left: 150 },
+      width = 1000 - margin.left - margin.right,
+      height = 750 - margin.top - margin.bottom;
+
+    // Append the svg object to the body of the page
+    const svg = d3.select("#myDiv")
+      .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+      .append("g")  // groups svg elements together
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+    // Read the data
+    (async () => {
+
+      //filepath where the data is stored
+      const datapath = "Song Features & Streams.csv";
+
+      //read in the data using d3
+      const data = await d3.csv(datapath);
+
+      //"data" is the variable that contains the data, if the csv loaded correctly
+      console.log("Song Data: ", data);
+
+      // Labels of row and columns -> unique identifier of the column called 'group' and 'variable'
+      const songFeatures = ["Acousticness", "Danceability", "Energy", "Instrumentalness", "Liveness", "Tempo", "Valence"];
+      const songFeatures2 = ["Acousticness", "Danceability", "Energy", "Instrumentalness", "Liveness", "Tempo", "Valence"];
+    //   const sf = d3.group(data, d => d.Acousticness); // this will group all acoustic values
+    //   console.log(sf)
+    //   d3.flatGroup(data, d => d.Acousticness, d => d.Danceability, d => d.Energy)
+    
+    //   console.log(d3.flatGroup(data, d => d.Acousticness, d => d.Danceability, d => d.Energy))
+
+      
+      // Song feature values
+      const acousticVals = data.map(d => d.Acousticness)
+      const danceVals = data.map(d => d.Danceability)
+      const energyVals = data.map(d => d.Energy)
+      const instrumVals = data.map((d,i) => {
+        if (i < 100) {
+            return d.Instrumentalness[i];
+        }
+        }
+      )
+      const liveVals = data.map(d => d.Liveness)
+      const tempoVals = data.map(d => d.Tempo)
+      const valenceVals = data.map(d => d.Valence)
+
+      // Array of song feature values (array of an array)
+      const fVals = [
+        [acousticVals], 
+        [danceVals],
+        [energyVals], 
+        [instrumVals], 
+        [liveVals], 
+        [tempoVals], 
+        [valenceVals]
+      ];
+      
+      console.log("Feature Values: ", fVals);
+      // console.log("Values: ", fVals[0][0]);
+      // console.log("Dance Vals: ", danceVals);
+
+      // for (i = 0; i < fVals.length; i++) {
+      //   console.log("Values: ", fVals[i][0]);
+      // }
+
+      // figuring out how to automate the spearman calculation
+      // const corr = new Array;
+      // // const corr_m = new Array;
+      // for (i = 0; i < fVals.length; i++) {
+      //   for (j = 0; j < fVals.length; j++) {
+      //       corr[i][j] = spearson.correlation.spearman(fVals[i],fVals[j])
+      //   }
+      // }
+      // console.log("Correlation Matrix: ", corr);
+
+      // Object array representation of above
+      const featVals = [
+        {
+          "Acousticness": acousticVals,
+          "Danceability": danceVals,
+          "Energy": energyVals,
+          "Instrumentalness": instrumVals,
+          "Liveness": liveVals,
+          "Tempo": tempoVals,
+          "Valence": valenceVals
+        }
+      ];
+      //console.log(featVals[0].Acousticness);
+
+      // code to automatically extract all object array fields from data
+        // const feat = Object.create(null);
+
+        // const songFeatures = data.forEach( (n) => { 
+        //   Object.keys(n).forEach( (k) => {
+        //     feat[k] = true;
+        //   });
+        // });
+      
+        // featNames = Object.keys(feat);
+        // console.log(featNames);
+      
+      // Correlation calculations
+      const corr = [];
+      for (i = 0; i < songFeatures.length; i++) {
+        for (j = 0; j < songFeatures.length; j++) {
+          if (!corr[i]) corr[i] = [];
+          corr[i][j] = spearson.correlation.spearman(fVals[i][0], fVals[j][0])
+        }
+      } 
+      console.log("Correlation matrix: ", corr);
+
+      // Build X scales and axis:
+      const x = d3.scaleBand()
+        .range([0, width])
+        .domain(songFeatures)
+        .padding(0.05);
+      svg.append("g")
+        .style("font-size", 15)
+        .attr("transform", `translate(0, ${height})`)
+        .call(d3.axisBottom(x).tickSize(10))
+        // .select(".domain").remove()
+
+      // Build Y scales and axis:
+      const y = d3.scaleBand()
+        .range([0, height])
+        .domain(songFeatures2)
+        .padding(0.05);
+      const y_ticks = svg.append("g")
+        .style("font-size", 15)
+        .call(d3.axisLeft(y).tickSize(10))
+
+      // console.log(y_ticks._groups[0])
+      // tick = y_ticks._groups[0][0].childNodes[1];
+      // console.log("Tick: ", tick);
+      // console.log(tick.attr("transform"))
+        // .select(".domain").remove()
+
+        // console.log("Y: ");
+
+      // Need to iterate through featVals
+
+      // const corr_test = new Array;
+      // corr_test[0] = spearson.correlation.spearman(featVals[0].Acousticness, featVals[0].Acousticness)
+      // corr_test[1] = spearson.correlation.spearman(featVals[0].Acousticness, featVals[0].Danceability)
+      // corr_test[2] = spearson.correlation.spearman(featVals[0].Acousticness, featVals[0].Energy)
+      // corr_test[3] = spearson.correlation.spearman(featVals[0].Acousticness, featVals[0].Instrumentalness)
+      // corr_test[4] = spearson.correlation.spearman(featVals[0].Acousticness, featVals[0].Liveness)
+      // corr_test[5] = spearson.correlation.spearman(featVals[0].Acousticness, featVals[0].Tempo)
+      // corr_test[6] = spearson.correlation.spearman(featVals[0].Acousticness, featVals[0].Valence)
+      
+      // console.log("Corr_test:");
+      // console.log(corr_test);
+
+      // const corr_matrix = [
+      //   {
+      //     "A to A": corr_test[0]
+      //   },
+      //   {
+      //     "A to D": corr_test[1]
+      //   },
+      //   {
+      //     "A to E": corr_test[2]
+      //   },
+      //   {
+      //     "A to I": corr_test[3]
+      //   },
+      //   {
+      //     "A to L": corr_test[4]
+      //   },
+      //   {
+      //     "A to T": corr_test[5]
+      //   },
+      //   {
+      //     "A to V": corr_test[6]
+      //   }
+      // ];
+
+      // console.log("Corr_matrix:");
+      // console.log(corr_matrix);
+
+      // const t = corr_matrix.keys();
+      // for (let key of t) {
+      //   console.log(key)
+      // }
+
+      // corr_matrix.forEach(function(e) { console.log(e); });
+      // corr_matrix.forEach((e) => { console.log(e); });
+
+      // Build color scale - first find max and min values of correlation matrix
+      const corr_min = d3.min(corr, (c) => d3.min(c));
+      const corr_max = d3.max(corr, (c) => d3.max(c));
+
+      const myColor = d3.scaleLinear()
+        .range(["#b7ffbf", "#00ab08"])
+        .domain([corr_min, corr_max])
+
+      console.log("[Max, Min] of Correlation Matrix: ", [corr_min, corr_max]);
+
+      // create a tooltip
+      const tooltip = d3.select("#myDiv")
+        .append("div")
+        .style("opacity", 0)
+        .attr("class", "tooltip")
+        .style("background-color", "white")
+        .style("border", "solid")
+        .style("border-width", "2px")
+        .style("border-radius", "5px")
+        .style("padding", "5px")
+
+      // Three function that change the tooltip when user hover / move / leave a cell
+      const mouseover = function (event, d) {
+        tooltip
+          .style("opacity", 1)
+        d3.select(this)
+          .style("stroke", "black")
+          .style("opacity", 1)
+      }
+      const mousemove = function (event, d) {
+        tooltip
+          .html(`The exact value of<br>this cell is: ${d}`)
+          .style("left", (event.x) / 2 + "px")
+          .style("top", (event.y) / 2 + "px")
+      }
+      const mouseleave = function (event, d) {
+        tooltip
+          .style("opacity", 0)
+        d3.select(this)
+          .style("stroke", "none")
+          .style("opacity", 0.8)
+      }
+
+
+      const corrIterator = function (c) { 
+        (c, i) => c[i]
+        // for (i = 0; i < c.length; i++) {
+        //   for (j = 0; j < c[i].length; j++) {
+        //     console.log(c[i][j])
+        //   }
+        // }
+      }
+
+      // Test correlation calcs
+      // const corr = Array.from({length: songFeatures.length}, 
+      //   () => Array.from({length: songFeatures.length }, 
+      //   () => false)
+      // )
+
+      // const corr = new Array;
+      // for (i = 0; i < songFeatures.length; i++) {
+      //   for (j = 0; j < songFeatures.length; j++) {
+      //       corr[i,j] = spearson.correlation.spearman(featVals[0], fVals[0])
+      //   }
+      // }
+      // const corr = new Array
+      // for (i = 0; i < songFeatures.length; i++) {
+      //   for (j = 0; j < songFeatures.length; j++) {
+      //     corr[i] = spearson.correlation.spearman(fVals[i], fVals[j])
+      //   }
+      // }
+
+      //   for (j = 0; i < songFeatures.length; j++) {
+      //       corr[i,j] = spearson.correlation.spearman(fVals[i], fVals[j])
+      //   }
+      // }
+
+      // const corr = spearson.correlation.spearman(acousticVals, acousticVals)
+      // for (i = 0; i < songFeatures.length; i++) {
+      //   const corr[i] = spearson.correlation.spearman(fVals[i], fVals[i+1])
+      // } 
+      // console.log("Corr");
+      // console.log(corr);
+      // console.log(x)
+      // console.log(data.length);
+      // console.log(songFeatures.length);
+
+      // add the squares
+
+      // for (i = 0; i < data.length; i++) {
+      //   for (f = 0; f < songFeatures.length; f++) {
+      //     svg.selectAll()
+      //       .data(data[i].Danceability)
+
+
+      //   }
+      //   svg.selectAll()
+      //     .data(data[i].Danceability)
+
+      // }
+
+      // console.log("X pos: ", (d,i) => console.log(x(songFeatures[i]).call));
+      
+      svg.selectAll()
+        .data(corr[0])
+        .join("rect")
+        .attr("x", (d,i) => x(songFeatures[i]))
+        // .attr("y", function (c,i) { return y(songFeatures[i]) })
+        // function (d,i) { return x(songFeatures[i]) })
+        .attr("rx", 4)
+        .attr("ry", 4)
+        .attr("width", x.bandwidth())
+        .attr("height", y.bandwidth())
+        .style("fill", function (d) { return myColor( d )})
+        .style("stroke-width", 4)
+        .style("stroke", "none")
+        .style("opacity", 0.8)
+
+
+        .on("mouseover", mouseover)
+        .on("mousemove", mousemove)
+        .on("mouseleave", mouseleave);
+
+      svg.selectAll()
+        .data(corr[1])
+        .join("rect")
+        .attr("x", function (c,i) { return x(songFeatures[i]) })
+        .attr("y", 139.52-(y.bandwidth()/2))
+        .attr("rx", 4)
+        .attr("ry", 4)
+        .attr("width", x.bandwidth())
+        .attr("height", y.bandwidth())
+        .style("fill", function (c,i) { return myColor( corr[i][1] )})
+        .style("stroke-width", 4)
+        .style("stroke", "none")
+        .style("opacity", 0.8)
+
+
+        .on("mouseover", mouseover)
+        .on("mousemove", mousemove)
+        .on("mouseleave", mouseleave);
+
+      svg.selectAll()
+        .data(corr[2])
+        .join("rect")
+        .attr("x", function (c,i) { return x(songFeatures[i]) })
+        .attr("y", 231.01-(y.bandwidth()/2))
+        .attr("rx", 4)
+        .attr("ry", 4)
+        .attr("width", x.bandwidth())
+        .attr("height", y.bandwidth())
+        .style("fill", function (c,i) { return myColor( corr[i][2] )})
+        .style("stroke-width", 4)
+        .style("stroke", "none")
+        .style("opacity", 0.8)
+
+
+        .on("mouseover", mouseover)
+        .on("mousemove", mousemove)
+        .on("mouseleave", mouseleave);
+
+      svg.selectAll()
+        .data(corr[3])
+        .join("rect")
+        .attr("x", function (c,i) { return x(songFeatures[i]) })
+        .attr("y", 322.5-(y.bandwidth()/2))
+        .attr("rx", 4)
+        .attr("ry", 4)
+        .attr("width", x.bandwidth())
+        .attr("height", y.bandwidth())
+        .style("fill", function (c,i) { return myColor( corr[i][3] )})
+        .style("stroke-width", 4)
+        .style("stroke", "none")
+        .style("opacity", 0.8)
+
+
+        .on("mouseover", mouseover)
+        .on("mousemove", mousemove)
+        .on("mouseleave", mouseleave);
+
+      svg.selectAll()
+        .data(corr[4])
+        .join("rect")
+        .attr("x", function (c,i) { return x(songFeatures[i]) })
+        .attr("y", 413.989-(y.bandwidth()/2))
+        .attr("rx", 4)
+        .attr("ry", 4)
+        .attr("width", x.bandwidth())
+        .attr("height", y.bandwidth())
+        .style("fill", function (c,i) { return myColor( corr[i][4] )})
+        .style("stroke-width", 4)
+        .style("stroke", "none")
+        .style("opacity", 0.8)
+
+
+        .on("mouseover", mouseover)
+        .on("mousemove", mousemove)
+        .on("mouseleave", mouseleave);
+
+
+    // Add title to graph
+    svg.append("text")
+      .attr("x", 0)
+      .attr("y", -50)
+      .attr("text-anchor", "left")
+      .style("font-size", "22px")
+      .text("Feature Heatmap");
+
+    // Add subtitle to graph
+    svg.append("text")
+      .attr("x", 0)
+      .attr("y", -20)
+      .attr("text-anchor", "left")
+      .style("font-size", "14px")
+      .style("fill", "grey")
+      .style("max-width", 400)
+      .text("A short description of the take-away message of this chart.");
+
+
+
+    }) ();
+
+
+  </script>
+  
+  
+  </body>
+  
+  </html>
