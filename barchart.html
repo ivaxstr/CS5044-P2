@@ -13,6 +13,9 @@
             width: 600px;
             height: 400px;
         } */
+        rect {
+            fill: #69b3a2;
+        }
     </style>
 
 </head>
@@ -101,7 +104,23 @@
                     .attr("y", function(d) { return y(d.Streams); })
                     .attr("width", x.bandwidth())
                     .attr("height", function(d) { return height - y(d.Streams); })
-                    .attr("fill", "#69b3a2")
+                    .on("mouseenter", function (event, d) {	// if the mouse enters a rectangle - event returns before data
+                        d3.select(this)					// select the element it entered
+                            .style("fill", "#3b665c");	// change its fill colour
+                        d3.select("svg")
+                            .append("text")
+                            .attr("class", "tooltip")	// we can give new elements a CSS class, allowing us to select them later
+                            .attr("x", event.x)			// we can access the coordinates from the mouseover event
+                            .attr("y", event.y - 20)
+                            .text("Song: " + d.Name + ", Artist: " + d.Artist + ", Streams: " + d.Streams + ", Duration: " + d.Duration);
+                            //.text("Duration of the song: " + d.Duration);
+                    })
+                    .on("mouseout", function (event, d) {	// if the mouse exits a rectangle
+                        d3.select(this)					// select the element it exited
+                            .style("fill", "#69b3a2")		// reset the fill colour
+                        d3.selectAll(".tooltip")		// select all elements of our class "tooltip"
+                            .remove();					// removes all elements
+                    });
 
 
         }) ();
