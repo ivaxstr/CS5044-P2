@@ -1,4 +1,4 @@
-﻿Artist,Id,Key,Name,Release Date (Streams.csv1),Year of Release Date,Acousticness,Danceability,Duration,Energy,Instrumentalness,Liveness,Loudness,Mode,Speechiness,Streams,Tempo,Valence
+﻿Artist,Id,Key,Name,Release Date,Year of Release Date,Acousticness,Danceability,Duration,Energy,Instrumentalness,Liveness,Loudness,Mode,Speechiness,Streams,Tempo,Valence
 The Weeknd,0VjIjW4GlUZAMYd2vXMi3b,1,Blinding Lights,29/11/2019,2019,0.00146,0.514,3.33,0.73,9.54e-05,0.0897,-5.934,1,0.0598,3.449,171.005,0.334
 Ed Sheeran,7qiZfU4dY1lWllzX7mPBI3,1,Shape of You,06/01/2017,2017,0.581,0.825,3.9,0.652,0,0.0931,-3.183,0,0.0802,3.398,95.977,0.931
 Tones And I,2XU0oxnq2qxCpomAAuJY8K,6,Dance Monkey,10/05/2019,2019,0.692,0.824,3.49,0.588,0.000104,0.149,-6.4,0,0.0924,2.77,98.027,0.513
