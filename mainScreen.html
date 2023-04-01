@@ -6,6 +6,9 @@
 
     <!-- Load d3.js v7 -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    
+    <!-- Load sliders library -->
+    <script src="sliders.js"></script>
 
     <style>
         /* Style the div that contains the bar chart */
@@ -38,16 +41,34 @@
 
         console.log(screenWidth, screenHeight)
         
-        // append the svg object to the body of the page
+        // append the svg object to the body of the page      
+
         var svg_filter = d3.select("#layout")
           .append("svg")
             .attr("class", "filter")
             .attr("width", screenWidth/3)
             .attr("height", screenHeight/3)
-            .attr("transform","translate(" + 0 + "," + -20 + ")")
-        //   .append("g")
-        //     .attr("transform",
-        //           "translate(" + 0 + "," + -10 + ")");
+            .attr("transform","translate(" + 0 + "," + -75 + ")")
+            .append("rect")
+              .attr("width", screenWidth/3)
+              .attr("height", screenHeight/3)
+              .style("fill", "black")
+              .append("text") // text doesn't show up for some reason
+                .style("font-size", "100px")
+                .style("fill", "green")
+                .text("Filters")
+                  .attr("x", 0)
+                  .attr("y", 0)
+
+              // tried calling slider here
+
+            // .call(d3.slider().axis(true).value( [ 10, 25 ] ).on("slide", function(evt, value) {
+            //   d3.select('#slider3textmin').text(value[ 0 ]);
+            //   d3.select('#slider3textmax').text(value[ 1 ]);
+            //   }
+            //   )
+            // )
+
         var svg_mainVis = d3.select("#layout")
           .append("svg")
             .attr("class", "mainVis")
