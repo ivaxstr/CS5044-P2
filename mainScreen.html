@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<head>
+    <title>Top 100 All-Time Most Streamed Songs on Spotify</title>
+
+    <!-- Load d3.js v7 -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+
+    <style>
+        /* Style the div that contains the bar chart */
+        /* #my_barchart {
+            width: 600px;
+            height: 400px;
+        } */
+        rect {
+            fill: #69b3a2;
+        }
+    </style>
+
+</head>
+
+
+<body>
+    <h2>Top 100 All-Time Most Streamed Songs on Spotify</h2>
+    <!-- Create a div where the visualizations will take place -->
+    <div id="layout"></div>
+
+    <script>
+
+        // set the dimensions and margins
+        var margin = {top: 30, right: 30, bottom: 70, left: 60},
+            width = 700 - margin.left - margin.right,
+            height = 400 - margin.top - margin.bottom;
+
+        const screenWidth = document.documentElement.clientWidth;
+        const screenHeight = document.documentElement.clientHeight;
+
+        console.log(screenWidth, screenHeight)
+        
+        // append the svg object to the body of the page
+        var svg_filter = d3.select("#layout")
+          .append("svg")
+            .attr("class", "filter")
+            .attr("width", screenWidth/3)
+            .attr("height", screenHeight/3)
+            .attr("transform","translate(" + 0 + "," + -20 + ")")
+        //   .append("g")
+        //     .attr("transform",
+        //           "translate(" + 0 + "," + -10 + ")");
+        var svg_mainVis = d3.select("#layout")
+          .append("svg")
+            .attr("class", "mainVis")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+          .append("g")
+            .attr("transform",
+                  "translate(" + margin.left + "," + margin.top + ")");
+        var svg_choices = d3.select("#layout")
+          .append("svg")
+            .attr("class", "choices")
+            .attr("width", screenWidth/3)
+            .attr("height", "400px")
+          .append("g")
+            .attr("transform",
+                  "translate(" + margin.left + "," + margin.top + ")");
+        var svg_heatmap = d3.select("#layout")
+            .append("svg")
+                .attr("class", "heatmap")
+                .attr("width", screenWidth/3)
+                .attr("height", "400px")
+            .append("g")
+                .attr("transform",
+                    "translate(" + margin.left + "," + margin.top + ")");
+
+        </script>
+
+</body>
+
