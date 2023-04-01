@@ -139,7 +139,9 @@
       const corr = [];
       for (i = 0; i < songFeatures.length; i++) {
         for (j = 0; j < songFeatures.length; j++) {
-          if (!corr[i]) corr[i] = [];
+          if (!corr[i]) {
+            corr[i] = [];
+          }
           corr[i][j] = spearson.correlation.spearman(fVals[i][0], fVals[j][0])
         }
       } 
@@ -151,6 +153,7 @@
         .domain(songFeatures)
         .padding(0.05);
       svg.append("g")
+        .attr("class","x_ticks")
         .style("font-size", 15)
         .attr("transform", `translate(0, ${height})`)
         .call(d3.axisBottom(x).tickSize(10))
@@ -161,73 +164,72 @@
         .range([0, height])
         .domain(songFeatures2)
         .padding(0.05);
-      const y_ticks = svg.append("g")
+      svg.append("g")
+        .attr("class", "y_ticks")
         .style("font-size", 15)
         .call(d3.axisLeft(y).tickSize(10))
 
-      // console.log(y_ticks._groups[0])
-      // tick = y_ticks._groups[0][0].childNodes[1];
-      // console.log("Tick: ", tick);
-      // console.log(tick.attr("transform"))
-        // .select(".domain").remove()
+      const y_tickPos = [];
 
-        // console.log("Y: ");
-
-      // Need to iterate through featVals
-
-      // const corr_test = new Array;
-      // corr_test[0] = spearson.correlation.spearman(featVals[0].Acousticness, featVals[0].Acousticness)
-      // corr_test[1] = spearson.correlation.spearman(featVals[0].Acousticness, featVals[0].Danceability)
-      // corr_test[2] = spearson.correlation.spearman(featVals[0].Acousticness, featVals[0].Energy)
-      // corr_test[3] = spearson.correlation.spearman(featVals[0].Acousticness, featVals[0].Instrumentalness)
-      // corr_test[4] = spearson.correlation.spearman(featVals[0].Acousticness, featVals[0].Liveness)
-      // corr_test[5] = spearson.correlation.spearman(featVals[0].Acousticness, featVals[0].Tempo)
-      // corr_test[6] = spearson.correlation.spearman(featVals[0].Acousticness, featVals[0].Valence)
-      
-      // console.log("Corr_test:");
-      // console.log(corr_test);
-
-      // const corr_matrix = [
-      //   {
-      //     "A to A": corr_test[0]
-      //   },
-      //   {
-      //     "A to D": corr_test[1]
-      //   },
-      //   {
-      //     "A to E": corr_test[2]
-      //   },
-      //   {
-      //     "A to I": corr_test[3]
-      //   },
-      //   {
-      //     "A to L": corr_test[4]
-      //   },
-      //   {
-      //     "A to T": corr_test[5]
-      //   },
-      //   {
-      //     "A to V": corr_test[6]
-      //   }
-      // ];
-
-      // console.log("Corr_matrix:");
-      // console.log(corr_matrix);
-
-      // const t = corr_matrix.keys();
-      // for (let key of t) {
-      //   console.log(key)
+      d3.selectAll(".y_ticks")
+        .selectAll(".tick")
+        .each( function (d) {
+          let tick = d3.select(this);
+          let transform = tick.attr("transform").replace("(","").replace(")","").split(",")[1];
+          y_tickPos.push(transform)
+          console.log("each tick", tick, transform);
+          }
+        )
+        console.log(y_tickPos)
+      // let y_tP = [];
+      // for (i = 0; i < songFeatures.length; i++) {
+      //   y_tP[i] = y_tickPos.attr("transform")
+      // }
+      //   // .attr("transform").replace("(","").replace(")","").split(",")
+      //   // .attr("opacity", 0.5)
+      // console.log(y_tickPos)
+      // // console.log(y_tP)
+      // const test = Array.from(document.querySelectorAll('g.y_ticks > g.tick'))
+      // console.log(test)
+      // for (i = 0; i < test.length; i++) {
+      //   console.log(test[i].transform)
       // }
 
-      // corr_matrix.forEach(function(e) { console.log(e); });
-      // corr_matrix.forEach((e) => { console.log(e); });
+      // const axis = d3.svg.axis().scale(y).orient("bottom").ticks(9);
+      // // grab the "scale" used by the axis, call .ticks()
+      // // passing the value we have for .ticks()
+      // console.log("all the points", y_axis.ticks(y_axis.ticks()[0]));
+      // // note, we actually select 11 points not 9, "closest guess"
+
+      // // paint the axis and then find its ticks
+      // svg.call(axis).selectAll(".tick").each(function (data) {
+      //   var tick = d3.select(this);
+      //   // pull the transform data out of the tick
+      //   var transform = d3.transform(tick.attr("transform")).translate;
+
+      //   // passed in "data" is the value of the tick, transform[0] holds the X value
+      //   console.log("each tick", data, transform);
+
 
       // Build color scale - first find max and min values of correlation matrix
       const corr_min = d3.min(corr, (c) => d3.min(c));
       const corr_max = d3.max(corr, (c) => d3.max(c));
+      const colors = [
+        '#5e519f',
+        '#3788ba',
+        '#6ac1a5',
+        '#acdca6',
+        '#e6f49d',
+        '#fffec2',
+        '#fddf90',
+        '#f26d4a',
+        '#d34052',
+        '#9a0942',
+        '#ff0000'
+      ];
 
       const myColor = d3.scaleLinear()
-        .range(["#b7ffbf", "#00ab08"])
+        .range(["#ffeda0","#f03b20"])
         .domain([corr_min, corr_max])
 
       console.log("[Max, Min] of Correlation Matrix: ", [corr_min, corr_max]);
@@ -265,71 +267,12 @@
           .style("opacity", 0.8)
       }
 
-
-      const corrIterator = function (c) { 
-        (c, i) => c[i]
-        // for (i = 0; i < c.length; i++) {
-        //   for (j = 0; j < c[i].length; j++) {
-        //     console.log(c[i][j])
-        //   }
-        // }
-      }
-
-      // Test correlation calcs
-      // const corr = Array.from({length: songFeatures.length}, 
-      //   () => Array.from({length: songFeatures.length }, 
-      //   () => false)
-      // )
-
-      // const corr = new Array;
-      // for (i = 0; i < songFeatures.length; i++) {
-      //   for (j = 0; j < songFeatures.length; j++) {
-      //       corr[i,j] = spearson.correlation.spearman(featVals[0], fVals[0])
-      //   }
-      // }
-      // const corr = new Array
-      // for (i = 0; i < songFeatures.length; i++) {
-      //   for (j = 0; j < songFeatures.length; j++) {
-      //     corr[i] = spearson.correlation.spearman(fVals[i], fVals[j])
-      //   }
-      // }
-
-      //   for (j = 0; i < songFeatures.length; j++) {
-      //       corr[i,j] = spearson.correlation.spearman(fVals[i], fVals[j])
-      //   }
-      // }
-
-      // const corr = spearson.correlation.spearman(acousticVals, acousticVals)
-      // for (i = 0; i < songFeatures.length; i++) {
-      //   const corr[i] = spearson.correlation.spearman(fVals[i], fVals[i+1])
-      // } 
-      // console.log("Corr");
-      // console.log(corr);
-      // console.log(x)
-      // console.log(data.length);
-      // console.log(songFeatures.length);
-
-      // add the squares
-
-      // for (i = 0; i < data.length; i++) {
-      //   for (f = 0; f < songFeatures.length; f++) {
-      //     svg.selectAll()
-      //       .data(data[i].Danceability)
-
-
-      //   }
-      //   svg.selectAll()
-      //     .data(data[i].Danceability)
-
-      // }
-
-      // console.log("X pos: ", (d,i) => console.log(x(songFeatures[i]).call));
       
       svg.selectAll()
-        .data(corr[0])
+        .data((d,i) => corr[i])
         .join("rect")
         .attr("x", (d,i) => x(songFeatures[i]))
-        // .attr("y", function (c,i) { return y(songFeatures[i]) })
+        .attr("y", (d,i) => y_tickPos[i] - (0.5*y.bandwidth))
         // function (d,i) { return x(songFeatures[i]) })
         .attr("rx", 4)
         .attr("ry", 4)
@@ -345,81 +288,81 @@
         .on("mousemove", mousemove)
         .on("mouseleave", mouseleave);
 
-      svg.selectAll()
-        .data(corr[1])
-        .join("rect")
-        .attr("x", function (c,i) { return x(songFeatures[i]) })
-        .attr("y", 139.52-(y.bandwidth()/2))
-        .attr("rx", 4)
-        .attr("ry", 4)
-        .attr("width", x.bandwidth())
-        .attr("height", y.bandwidth())
-        .style("fill", function (c,i) { return myColor( corr[i][1] )})
-        .style("stroke-width", 4)
-        .style("stroke", "none")
-        .style("opacity", 0.8)
+      // svg.selectAll()
+      //   .data(corr[1])
+      //   .join("rect")
+      //   .attr("x", function (c,i) { return x(songFeatures[i]) })
+      //   .attr("y", 139.52-(y.bandwidth()/2))
+      //   .attr("rx", 4)
+      //   .attr("ry", 4)
+      //   .attr("width", x.bandwidth())
+      //   .attr("height", y.bandwidth())
+      //   .style("fill", function (c,i) { return myColor( corr[i][1] )})
+      //   .style("stroke-width", 4)
+      //   .style("stroke", "none")
+      //   .style("opacity", 0.8)
 
 
-        .on("mouseover", mouseover)
-        .on("mousemove", mousemove)
-        .on("mouseleave", mouseleave);
+      //   .on("mouseover", mouseover)
+      //   .on("mousemove", mousemove)
+      //   .on("mouseleave", mouseleave);
 
-      svg.selectAll()
-        .data(corr[2])
-        .join("rect")
-        .attr("x", function (c,i) { return x(songFeatures[i]) })
-        .attr("y", 231.01-(y.bandwidth()/2))
-        .attr("rx", 4)
-        .attr("ry", 4)
-        .attr("width", x.bandwidth())
-        .attr("height", y.bandwidth())
-        .style("fill", function (c,i) { return myColor( corr[i][2] )})
-        .style("stroke-width", 4)
-        .style("stroke", "none")
-        .style("opacity", 0.8)
-
-
-        .on("mouseover", mouseover)
-        .on("mousemove", mousemove)
-        .on("mouseleave", mouseleave);
-
-      svg.selectAll()
-        .data(corr[3])
-        .join("rect")
-        .attr("x", function (c,i) { return x(songFeatures[i]) })
-        .attr("y", 322.5-(y.bandwidth()/2))
-        .attr("rx", 4)
-        .attr("ry", 4)
-        .attr("width", x.bandwidth())
-        .attr("height", y.bandwidth())
-        .style("fill", function (c,i) { return myColor( corr[i][3] )})
-        .style("stroke-width", 4)
-        .style("stroke", "none")
-        .style("opacity", 0.8)
+      // svg.selectAll()
+      //   .data(corr[2])
+      //   .join("rect")
+      //   .attr("x", function (c,i) { return x(songFeatures[i]) })
+      //   .attr("y", 231.01-(y.bandwidth()/2))
+      //   .attr("rx", 4)
+      //   .attr("ry", 4)
+      //   .attr("width", x.bandwidth())
+      //   .attr("height", y.bandwidth())
+      //   .style("fill", function (c,i) { return myColor( corr[i][2] )})
+      //   .style("stroke-width", 4)
+      //   .style("stroke", "none")
+      //   .style("opacity", 0.8)
 
 
-        .on("mouseover", mouseover)
-        .on("mousemove", mousemove)
-        .on("mouseleave", mouseleave);
+      //   .on("mouseover", mouseover)
+      //   .on("mousemove", mousemove)
+      //   .on("mouseleave", mouseleave);
 
-      svg.selectAll()
-        .data(corr[4])
-        .join("rect")
-        .attr("x", function (c,i) { return x(songFeatures[i]) })
-        .attr("y", 413.989-(y.bandwidth()/2))
-        .attr("rx", 4)
-        .attr("ry", 4)
-        .attr("width", x.bandwidth())
-        .attr("height", y.bandwidth())
-        .style("fill", function (c,i) { return myColor( corr[i][4] )})
-        .style("stroke-width", 4)
-        .style("stroke", "none")
-        .style("opacity", 0.8)
+      // svg.selectAll()
+      //   .data(corr[3])
+      //   .join("rect")
+      //   .attr("x", function (c,i) { return x(songFeatures[i]) })
+      //   .attr("y", 322.5-(y.bandwidth()/2))
+      //   .attr("rx", 4)
+      //   .attr("ry", 4)
+      //   .attr("width", x.bandwidth())
+      //   .attr("height", y.bandwidth())
+      //   .style("fill", function (c,i) { return myColor( corr[i][3] )})
+      //   .style("stroke-width", 4)
+      //   .style("stroke", "none")
+      //   .style("opacity", 0.8)
 
 
-        .on("mouseover", mouseover)
-        .on("mousemove", mousemove)
-        .on("mouseleave", mouseleave);
+      //   .on("mouseover", mouseover)
+      //   .on("mousemove", mousemove)
+      //   .on("mouseleave", mouseleave);
+
+      // svg.selectAll()
+      //   .data(corr[4])
+      //   .join("rect")
+      //   .attr("x", function (c,i) { return x(songFeatures[i]) })
+      //   .attr("y", 413.989-(y.bandwidth()/2))
+      //   .attr("rx", 4)
+      //   .attr("ry", 4)
+      //   .attr("width", x.bandwidth())
+      //   .attr("height", y.bandwidth())
+      //   .style("fill", function (c,i) { return myColor( corr[i][4] )})
+      //   .style("stroke-width", 4)
+      //   .style("stroke", "none")
+      //   .style("opacity", 0.8)
+
+
+      //   .on("mouseover", mouseover)
+      //   .on("mousemove", mousemove)
+      //   .on("mouseleave", mouseleave);
 
 
     // Add title to graph
