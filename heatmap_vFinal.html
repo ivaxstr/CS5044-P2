@@ -43,7 +43,6 @@
         .attr("height", height + margin.top + margin.bottom)
       .append("g")  // groups svg elements together
         .attr("transform", `translate(${margin.left},${margin.top})`);
-
     // Read the data
     (async () => {
 
@@ -135,23 +134,9 @@
       // Build color scale - first find max and min values of correlation matrix
       const corr_min = d3.min(corr, (c) => d3.min(c));
       const corr_max = d3.max(corr, (c) => d3.max(c));
-      const colors = [
-        '#5e519f',
-        '#3788ba',
-        '#6ac1a5',
-        '#acdca6',
-        '#e6f49d',
-        '#fffec2',
-        '#fddf90',
-        '#f26d4a',
-        '#d34052',
-        '#9a0942',
-        '#ff0000'
-      ];
 
       const myColor = d3.scaleLinear()
-        // .range(["#ffeda0","#f03b20"])
-        .range(["blue","red"])
+        .range(['#0000ff','#ff0000']) // blue, red
         .domain([corr_min, corr_max])
 
       //console.log("[Max, Min] of Correlation Matrix: ", [corr_min, corr_max]);
@@ -166,7 +151,8 @@
         .style("border-width", "2px")
         .style("border-radius", "5px")
         .style("padding", "5px")
-
+        
+        console.log(svg.attr("width"))
       // Three function that change the tooltip when user hover / move / leave a cell
       const mouseover = function (event, d) {
         tooltip
@@ -177,9 +163,10 @@
       }
       const mousemove = function (event, d) {
         tooltip
-          .html(`The exact value of<br>this cell is: ${d}`)
-          .style("left", (event.x) / 2 + "px")
-          .style("top", (event.y) / 2 + "px")
+          .text(`Correlation calculation of this cell is: ${d}`)
+          .style("left", (event.x) + "px") // these don't make any changes...
+          .style("top", (event.y) + "px")
+          .style("width", "1000px") // edit this to make it the width of the heatmap svg
       }
       const mouseleave = function (event, d) {
         tooltip
@@ -189,8 +176,8 @@
           .style("opacity", 0.8)
       }
       
-      // There should be a way more elegant way to do this, but so far we just hardcoded in the
-      // y-position of the correlation matrix row data.
+      // There should be a more elegant way to do this, but so far y-position of the correlation matrix row data
+      // is hardcoded.
 
       svg.selectAll()
         .data( corr[0] )
@@ -325,17 +312,21 @@
       .attr("y", -50)
       .attr("text-anchor", "left")
       .style("font-size", "22px")
-      .text("Feature Heatmap");
+      .text("Song Feature Heatmap");
 
     // Add subtitle to graph
     svg.append("text")
       .attr("x", 0)
-      .attr("y", -20)
+      .attr("y", -30)
       .attr("text-anchor", "left")
       .style("font-size", "14px")
       .style("fill", "grey")
       .style("max-width", 400)
-      .text("A short description of the take-away message of this chart.");
+      .text("Correlations between song features as calculated by Spearman's rank correlation calculation. Blue to red signifies low to high correlation.")
+      .append("tspan")
+        .attr("dy", "1.2em")
+        .attr("x", 0)
+        .text("Correlation calculation values are available below the heatmap as you hover over each individual cell.");
 
     }) ();
 
