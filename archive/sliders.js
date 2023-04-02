@@ -53,7 +53,7 @@ return function module() {
 
       // Create scale if not defined by user
       if (!scale) {
-        scale = d3.scale.linear().domain([min, max]);
+        scale = d3.scaleLinear().domain([min, max]);
       }
 
       // Start value
@@ -62,8 +62,8 @@ return function module() {
       // DIV container
       var div = d3.select(this).classed("d3-slider d3-slider-" + orientation, true);
       
-      var drag = d3.behavior.drag();
-      drag.on('dragend', function () {
+      var drag = d3.drag();
+      drag.on('drag', function () {
         dispatch.slideend(d3.event, value);
       })
 
@@ -152,10 +152,10 @@ return function module() {
         // Create axis if not defined by user
         if (typeof axis === "boolean") {
 
-          axis = d3.svg.axis()
+          axis = d3.axisBottom(axisScale)
               .ticks(Math.round(sliderLength / 100))
               .tickFormat(tickFormat)
-              .orient((orientation === "horizontal") ? "bottom" :  "right");
+              // .orient((orientation === "horizontal") ? "bottom" :  "right");
 
         }
 
@@ -165,7 +165,7 @@ return function module() {
 
           // Create SVG axis container
         var svg = dom.append("svg")
-            .classed("d3-slider-axis d3-slider-axis-" + axis.orient(), true)
+            .classed("d3-slider-axis d3-slider-axis-" + d3.axisBottom(), true)
             .on("click", stopPropagation);
 
         var g = svg.append("g");
@@ -180,7 +180,7 @@ return function module() {
             height: margin
           });
 
-          if (axis.orient() === "top") {
+          if (d3.axisTop()) {
             svg.style("top", -margin + "px");
             g.attr("transform", "translate(" + margin + "," + margin + ")");
           } else { // bottom
@@ -419,9 +419,27 @@ return function module() {
     return slider;
   };
 
-  d3.rebind(slider, dispatch, "on");
+  rebind(slider, dispatch, "on");
 
   return slider;
+
+  // Copies a variable number of methods from source to target.
+  function rebind(target, source) {
+    var i = 1, n = arguments.length, method;
+    while (++i < n) target[method = arguments[i]] = d3_rebind(target, source, source[method]);
+    return target;
+  };
+
+  // Method is assumed to be a standard D3 getter-setter:
+  // If passed with no arguments, gets the value.
+  // If passed with arguments, sets the value and returns the target.
+  function d3_rebind(target, source, method) {
+    return function() {
+      var value = method.apply(source, arguments);
+      return value === source ? target : value;
+    };
+  }
+
 
 }
 }));
