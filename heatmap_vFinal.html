@@ -43,7 +43,7 @@
     // Set the dimensions and margins of the graph
     const margin = { top: 75, right: 0, bottom: 30, left: 150 },
       width = 1000 - margin.left - margin.right,
-      height = 750 - margin.top - margin.bottom;
+      height = 800 - margin.top - margin.bottom;
 
     // Append the svg object to the body of the page
     const svg = d3.select("#myDiv")
@@ -148,6 +148,49 @@
       const myColor = d3.scaleLinear()
         .range(['#0000ff', '#ff0000']) // blue, red
         .domain([corr_min, corr_max])
+
+      // append legend svg object to the div
+      var legend = d3.select("#myDiv")
+      .append("svg")
+      .attr("transform", "translate(-625,-760)")
+      .attr("width", 240)
+      .attr("height", 60)
+      .append("g")
+
+      legend.append("defs");
+      var gradient = legend.select("defs")
+        .append("linearGradient")
+        .attr("id", "linear-gradient")
+        .attr("x1", "0%")
+        .attr("y1", "0%")
+        .attr("x2", "100%")
+        .attr("y2", "0%");
+      gradient.append("stop")
+        .attr("offset", "0%")
+        .attr("stop-color", "blue");
+      gradient.append("stop")
+        .attr("id", "gradientStop")
+        .attr("offset", "100%")
+        .attr("stop-color", "red");
+
+      legend.append("rect")
+        .attr("x", 10)
+        .attr("y", 10)
+        .attr("width", 180)
+        .attr("height", 20)
+        .style("stroke", "black")
+        .style("fill", "url(#linear-gradient)");
+
+      // label each end of the legend rectangle
+      legend.append("text")
+        .attr("x", 10)
+        .attr("y", 45)
+        .text(d3.format(".2f")(corr_min));
+      legend.append("text")
+        .attr("id", "legendMaxLabel")
+        .attr("x", 190)
+        .attr("y", 45)
+        .text(corr_max);
 
       //console.log("[Max, Min] of Correlation Matrix: ", [corr_min, corr_max]);
 
