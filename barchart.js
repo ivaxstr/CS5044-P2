@@ -1,7 +1,7 @@
 // set the dimensions and margins of the graph
-var margin = {top: 30, right: 30, bottom: 70, left: 60},
+var margin = {top: 30, right: 30, bottom: 120, left: 60},
 width = 700 - margin.left - margin.right,
-height = 400 - margin.top - margin.bottom;
+height = 500 - margin.top - margin.bottom;
 
 // append the svg object to the body of the page
 var svg = d3.select("#my_barchart")
@@ -188,7 +188,7 @@ function initialiseVis(data) {
 
     svg.append("g")
         .attr("transform", "translate(0," + height + ")")
-        .call(d3.axisBottom(x))
+        .call(d3.axisBottom(x).tickValues(x.domain().filter(function(d,i){ return !(i%10)})))
         .selectAll("text")
             .attr("transform", "translate(-10,0)rotate(-45)")
             .style("text-anchor", "end");
@@ -363,7 +363,7 @@ function updateData(data) {
 
     svg.append("g")
         .attr("transform", "translate(0," + height + ")")
-        .call(d3.axisBottom(x))
+        .call(d3.axisBottom(x).tickValues(x.domain().filter(function(d,i){ return !(i%10)})))
         .selectAll("text")
             .attr("transform", "translate(-10,0)rotate(-45)")
             .style("text-anchor", "end");
