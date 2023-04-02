@@ -11,6 +11,13 @@ var svg = d3.select("#my_barchart")
 .append("g")
 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+// append legend svg object to the right div
+var legend = d3.select("#colourScaleLegend")
+.append("svg")
+.attr("width", 240)
+.attr("height", 60)
+.append("g");
+
 // array of attributes to choose from to colour the bars
 var colourAttributes = ["Duration", "Loudness", "Tempo"];
 var colours = ["green", "orange", "red"];
@@ -78,31 +85,43 @@ function initialiseVis(data) {
 
         console.log(menuItem);
 
+        // updating legends & bar colours
+
+        legend.selectAll("#legendMaxLabel").remove();
+
         if (menuItem == "Duration") {
             selectedColourAttribute = colours[0];
             selectedColour = 0;
             colorDuration = d3.scaleLinear().domain([0, maxDuration]).range(["white", selectedColourAttribute]);
-            d3.selectAll("rect")
+            svg.selectAll("rect")
             .transition()
             .duration(400)
             .style("fill", function(d) { return colorDuration(d.Duration); });
+            legend.append("text").attr("id", "legendMaxLabel").attr("x", 190).attr("y", 45).text(maxDuration);
         } else if (menuItem == "Loudness") {
             selectedColourAttribute = colours[1];
             selectedColour = 1;
             colorDuration = d3.scaleLinear().domain([0, maxLoudness]).range(["white", selectedColourAttribute]);
-            d3.selectAll("rect")
+            svg.selectAll("rect")
             .transition()
             .duration(400)
             .style("fill", function(d) { return colorDuration(d.Loudness); });
+            legend.append("text").attr("id", "legendMaxLabel").attr("x", 190).attr("y", 45).text(maxLoudness);
         } else if (menuItem == "Tempo") {
             selectedColourAttribute = colours[2];
             selectedColour = 2;
             colorDuration = d3.scaleLinear().domain([minTempo, maxTempo]).range(["white", selectedColourAttribute]);
-            d3.selectAll("rect")
+            svg.selectAll("rect")
             .transition()
             .duration(400)
             .style("fill", function(d) { return colorDuration(d.Tempo); });
+            legend.append("text").attr("id", "legendMaxLabel").attr("x", 190).attr("y", 45).text(maxTempo);
         }
+        gradient.selectAll("#gradientStop").remove();
+        gradient.append("stop")
+            .attr("id", "gradientStop")
+            .attr("offset", "100%")
+            .attr("stop-color", selectedColourAttribute);
 
     });
 
@@ -119,13 +138,48 @@ function initialiseVis(data) {
 
     });
 
-    // define x and y scales 
-    // define colour scale
+    // define colour scale & draw its legend
     var colorDuration = d3.scaleLinear()
         .domain([0, maxDuration])
         .range(["white", selectedColourAttribute]);
+    
 
+    legend.append("defs");
+    var gradient = legend.select("defs")
+        .append("linearGradient")
+        .attr("id", "linear-gradient")
+        .attr("x1", "0%")
+        .attr("y1", "0%")
+        .attr("x2", "100%")
+        .attr("y2", "0%");
+    gradient.append("stop")
+        .attr("offset", "0%")
+        .attr("stop-color", "white");
+    gradient.append("stop")
+        .attr("id", "gradientStop")
+        .attr("offset", "100%")
+        .attr("stop-color", selectedColourAttribute);
+    
+    legend.append("rect")
+        .attr("x", 10)
+        .attr("y", 10)
+        .attr("width", 180)
+        .attr("height", 20)
+        .style("stroke", "black")
+        .style("fill", "url(#linear-gradient)");
 
+    // label each end of the legend rectangle
+    legend.append("text")
+        .attr("x", 10)
+        .attr("y", 45)
+        .text("0");
+    legend.append("text")
+        .attr("id", "legendMaxLabel")
+        .attr("x", 190)
+        .attr("y", 45)
+        .text(maxDuration); // also change according to attribute
+
+    // define x and y scales 
     // X axis: scale and draw:
     var x = d3.scaleBand()
         .range([ 0, width ])

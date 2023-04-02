@@ -24,11 +24,17 @@
 <body>
     <h2>Spotify top 100 songs bar chart</h2>
         <div style="display: flex;">
-        <!-- Create a div where the graph will take place -->
+        <!-- Create a vertical div for the sliders and heatmap -->
+        <div id="sliders"></div>
+        </div>
+
+        <div style="display: flex;">
+        <!-- Create a horizontal div where the graph will take place -->
         <div id="my_barchart"></div>
         <div id="dropDownMenuContainer">
             <p>Colour scale selection</p>
             <div id="dropDownMenuColours"></div>
+            <div id="colourScaleLegend"></div>
             <p>Sort songs by:</p>
             <div id="dropDownMenuSort"></div>
         </div>
