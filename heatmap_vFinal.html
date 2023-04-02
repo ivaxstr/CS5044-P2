@@ -29,6 +29,14 @@
   <!-- Load spearson correlation calculation from https://github.com/agrueneberg/Spearson/tree/gh-pages/lib -->
   <script src="spearson.js"></script>
 
+  <!-- References used to construct heatmap -->
+  <p><b>References:</b></p>
+  <!-- Reference code for spearson calculation: https://d3-graph-gallery.com/heatmap -->
+  <a href="https://github.com/agrueneberg/Spearson/tree/gh-pages/lib">Spearson correlation calculation source code</a>
+  <br></br>
+  <!-- Reference code for heatmap: https://d3-graph-gallery.com/heatmap -->
+  <a href="https://d3-graph-gallery.com/heatmap">Heatmap reference</a>
+
   <!-- Start of JavaScript code -->
   <script>
 
@@ -44,16 +52,17 @@
       .attr("height", height + margin.top + margin.bottom)
       .append("g")  // groups svg elements together
       .attr("transform", `translate(${margin.left},${margin.top})`);
+
     // Read the data
     (async () => {
 
-      //filepath where the data is stored
+      // Filepath where the data is stored
       const datapath = "Song Features & Streams.csv";
 
-      //read in the data using d3
+      // Read in the data using d3
       const data = await d3.csv(datapath);
 
-      //"data" is the variable that contains the data, if the csv loaded correctly
+      // "data" is the variable that contains the data, if the csv loaded correctly
       //console.log("Song Data: ", data);
 
       // Labels of row and columns -> identifiers for each axis
@@ -66,7 +75,7 @@
       const energyVals = data.map(d => d.Energy)
       const instrumVals = data.map((d, i) => {
         if (i < 100) {
-          return d.Instrumentalness[i];
+          return d.Instrumentalness[i]; // values of instrumentalness can be very small (9e-5), this ensures the whole numeric return
         }
       }
       )
@@ -119,7 +128,7 @@
         .style("font-size", 15)
         .call(d3.axisLeft(y).tickSize(10))
 
-      // Store y_axis tick marks
+      // Store y_axis tick mark positions
       const y_tickPos = [];
 
       d3.selectAll(".y_ticks")
@@ -153,7 +162,6 @@
         .style("border-radius", "5px")
         .style("padding", "5px")
 
-      console.log(svg.attr("width"))
       // Three function that change the tooltip when user hover / move / leave a cell
       const mouseover = function (event, d) {
         tooltip
@@ -165,9 +173,9 @@
       const mousemove = function (event, d) {
         tooltip
           .text(`Correlation calculation of this cell is: ${d}`)
-          .style("left", (event.x) + "px") // these don't make any changes...
+          .style("left", (event.x) + "px")
           .style("top", (event.y) + "px")
-          .style("width", "1000px") // edit this to make it the width of the heatmap svg
+          .style("width", "1000px")
       }
       const mouseleave = function (event, d) {
         tooltip
@@ -178,7 +186,7 @@
       }
 
       // There should be a more elegant way to do this, but so far y-position of the correlation matrix row data
-      // is hardcoded.
+      // is extracted from y_tickPos (which stores the y tickmark positions).
 
       svg.selectAll()
         .data(corr[0])
@@ -328,12 +336,9 @@
         .attr("dy", "1.2em")
         .attr("x", 0)
         .text("Correlation calculation values are available below the heatmap as you hover over each individual cell.");
-
     })();
 
-
   </script>
-
 
 </body>
 
