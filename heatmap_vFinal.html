@@ -26,6 +26,7 @@
   <!-- Load color palettes -->
   <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 
+  <!-- Load spearson correlation calculation from https://github.com/agrueneberg/Spearson/tree/gh-pages/lib -->
   <script src="spearson.js"></script>
 
   <!-- Start of JavaScript code -->
@@ -39,10 +40,10 @@
     // Append the svg object to the body of the page
     const svg = d3.select("#myDiv")
       .append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
       .append("g")  // groups svg elements together
-        .attr("transform", `translate(${margin.left},${margin.top})`);
+      .attr("transform", `translate(${margin.left},${margin.top})`);
     // Read the data
     (async () => {
 
@@ -58,16 +59,16 @@
       // Labels of row and columns -> identifiers for each axis
       const songFeatures_x = ["Acousticness", "Danceability", "Energy", "Instrumentalness", "Liveness", "Tempo", "Valence"];
       const songFeatures_y = ["Acousticness", "Danceability", "Energy", "Instrumentalness", "Liveness", "Tempo", "Valence"];
-  
+
       // Song feature values
       const acousticVals = data.map(d => d.Acousticness)
       const danceVals = data.map(d => d.Danceability)
       const energyVals = data.map(d => d.Energy)
-      const instrumVals = data.map((d,i) => {
+      const instrumVals = data.map((d, i) => {
         if (i < 100) {
-            return d.Instrumentalness[i];
+          return d.Instrumentalness[i];
         }
-        }
+      }
       )
       const liveVals = data.map(d => d.Liveness)
       const tempoVals = data.map(d => d.Tempo)
@@ -75,16 +76,16 @@
 
       // Array of song feature values (array of an array)
       const fVals = [
-        [acousticVals], 
+        [acousticVals],
         [danceVals],
-        [energyVals], 
-        [instrumVals], 
-        [liveVals], 
-        [tempoVals], 
+        [energyVals],
+        [instrumVals],
+        [liveVals],
+        [tempoVals],
         [valenceVals]
       ];
       //console.log("Feature Values: ", fVals);
-      
+
       // Correlation calculations
       const corr = [];
       for (i = 0; i < songFeatures_x.length; i++) {
@@ -94,7 +95,7 @@
           }
           corr[i][j] = spearson.correlation.spearman(fVals[i][0], fVals[j][0])
         }
-      } 
+      }
       //console.log("Correlation matrix: ", corr);
 
       // Build X scales and axis:
@@ -103,7 +104,7 @@
         .domain(songFeatures_x)
         .padding(0.05);
       svg.append("g")
-        .attr("class","x_ticks")
+        .attr("class", "x_ticks")
         .style("font-size", 15)
         .attr("transform", `translate(0, ${height})`)
         .call(d3.axisBottom(x).tickSize(10))
@@ -123,11 +124,11 @@
 
       d3.selectAll(".y_ticks")
         .selectAll(".tick")
-        .each( function (d) {
+        .each(function (d) {
           let tick = d3.select(this);
-          let transform = tick.attr("transform").replace("(","").replace(")","").split(",")[1];
+          let transform = tick.attr("transform").replace("(", "").replace(")", "").split(",")[1];
           y_tickPos.push(transform)
-          }
+        }
         )
       //console.log(y_tickPos)
 
@@ -136,7 +137,7 @@
       const corr_max = d3.max(corr, (c) => d3.max(c));
 
       const myColor = d3.scaleLinear()
-        .range(['#0000ff','#ff0000']) // blue, red
+        .range(['#0000ff', '#ff0000']) // blue, red
         .domain([corr_min, corr_max])
 
       //console.log("[Max, Min] of Correlation Matrix: ", [corr_min, corr_max]);
@@ -151,8 +152,8 @@
         .style("border-width", "2px")
         .style("border-radius", "5px")
         .style("padding", "5px")
-        
-        console.log(svg.attr("width"))
+
+      console.log(svg.attr("width"))
       // Three function that change the tooltip when user hover / move / leave a cell
       const mouseover = function (event, d) {
         tooltip
@@ -175,20 +176,20 @@
           .style("stroke", "none")
           .style("opacity", 0.8)
       }
-      
+
       // There should be a more elegant way to do this, but so far y-position of the correlation matrix row data
       // is hardcoded.
 
       svg.selectAll()
-        .data( corr[0] )
+        .data(corr[0])
         .join("rect")
-        .attr("x", (d,i) => x(songFeatures_x[i]))
-        .attr("y", (d) => y_tickPos[0] - (0.5*y.bandwidth()))
+        .attr("x", (d, i) => x(songFeatures_x[i]))
+        .attr("y", (d) => y_tickPos[0] - (0.5 * y.bandwidth()))
         .attr("rx", 4)
         .attr("ry", 4)
         .attr("width", x.bandwidth())
         .attr("height", y.bandwidth())
-        .style("fill", function (d) { return myColor( d )})
+        .style("fill", function (d) { return myColor(d) })
         .style("stroke-width", 4)
         .style("stroke", "none")
         .style("opacity", 0.8)
@@ -197,16 +198,16 @@
         .on("mousemove", mousemove)
         .on("mouseleave", mouseleave);
 
-        svg.selectAll()
-        .data( corr[1] )
+      svg.selectAll()
+        .data(corr[1])
         .join("rect")
-        .attr("x", (d,i) => x(songFeatures_x[i]))
-        .attr("y", (d) => y_tickPos[1] - (0.5*y.bandwidth()))
+        .attr("x", (d, i) => x(songFeatures_x[i]))
+        .attr("y", (d) => y_tickPos[1] - (0.5 * y.bandwidth()))
         .attr("rx", 4)
         .attr("ry", 4)
         .attr("width", x.bandwidth())
         .attr("height", y.bandwidth())
-        .style("fill", function (d) { return myColor( d )})
+        .style("fill", function (d) { return myColor(d) })
         .style("stroke-width", 4)
         .style("stroke", "none")
         .style("opacity", 0.8)
@@ -215,16 +216,16 @@
         .on("mousemove", mousemove)
         .on("mouseleave", mouseleave);
 
-        svg.selectAll()
-        .data( corr[2] )
+      svg.selectAll()
+        .data(corr[2])
         .join("rect")
-        .attr("x", (d,i) => x(songFeatures_x[i]))
-        .attr("y", (d) => y_tickPos[2] - (0.5*y.bandwidth()))
+        .attr("x", (d, i) => x(songFeatures_x[i]))
+        .attr("y", (d) => y_tickPos[2] - (0.5 * y.bandwidth()))
         .attr("rx", 4)
         .attr("ry", 4)
         .attr("width", x.bandwidth())
         .attr("height", y.bandwidth())
-        .style("fill", function (d) { return myColor( d )})
+        .style("fill", function (d) { return myColor(d) })
         .style("stroke-width", 4)
         .style("stroke", "none")
         .style("opacity", 0.8)
@@ -234,16 +235,16 @@
         .on("mousemove", mousemove)
         .on("mouseleave", mouseleave);
 
-        svg.selectAll()
-        .data( corr[3] )
+      svg.selectAll()
+        .data(corr[3])
         .join("rect")
-        .attr("x", (d,i) => x(songFeatures_x[i]))
-        .attr("y", (d) => y_tickPos[3] - (0.5*y.bandwidth()))
+        .attr("x", (d, i) => x(songFeatures_x[i]))
+        .attr("y", (d) => y_tickPos[3] - (0.5 * y.bandwidth()))
         .attr("rx", 4)
         .attr("ry", 4)
         .attr("width", x.bandwidth())
         .attr("height", y.bandwidth())
-        .style("fill", function (d) { return myColor( d )})
+        .style("fill", function (d) { return myColor(d) })
         .style("stroke-width", 4)
         .style("stroke", "none")
         .style("opacity", 0.8)
@@ -252,16 +253,16 @@
         .on("mousemove", mousemove)
         .on("mouseleave", mouseleave);
 
-        svg.selectAll()
-        .data( corr[4] )
+      svg.selectAll()
+        .data(corr[4])
         .join("rect")
-        .attr("x", (d,i) => x(songFeatures_x[i]))
-        .attr("y", (d) => y_tickPos[4] - (0.5*y.bandwidth()))
+        .attr("x", (d, i) => x(songFeatures_x[i]))
+        .attr("y", (d) => y_tickPos[4] - (0.5 * y.bandwidth()))
         .attr("rx", 4)
         .attr("ry", 4)
         .attr("width", x.bandwidth())
         .attr("height", y.bandwidth())
-        .style("fill", function (d) { return myColor( d )})
+        .style("fill", function (d) { return myColor(d) })
         .style("stroke-width", 4)
         .style("stroke", "none")
         .style("opacity", 0.8)
@@ -270,16 +271,16 @@
         .on("mousemove", mousemove)
         .on("mouseleave", mouseleave);
 
-        svg.selectAll()
-        .data( corr[5] )
+      svg.selectAll()
+        .data(corr[5])
         .join("rect")
-        .attr("x", (d,i) => x(songFeatures_x[i]))
-        .attr("y", (d) => y_tickPos[5] - (0.5*y.bandwidth()))
+        .attr("x", (d, i) => x(songFeatures_x[i]))
+        .attr("y", (d) => y_tickPos[5] - (0.5 * y.bandwidth()))
         .attr("rx", 4)
         .attr("ry", 4)
         .attr("width", x.bandwidth())
         .attr("height", y.bandwidth())
-        .style("fill", function (d) { return myColor( d )})
+        .style("fill", function (d) { return myColor(d) })
         .style("stroke-width", 4)
         .style("stroke", "none")
         .style("opacity", 0.8)
@@ -288,16 +289,16 @@
         .on("mousemove", mousemove)
         .on("mouseleave", mouseleave);
 
-        svg.selectAll()
-        .data( corr[6] )
+      svg.selectAll()
+        .data(corr[6])
         .join("rect")
-        .attr("x", (d,i) => x(songFeatures_x[i]))
-        .attr("y", (d) => y_tickPos[6] - (0.5*y.bandwidth()))
+        .attr("x", (d, i) => x(songFeatures_x[i]))
+        .attr("y", (d) => y_tickPos[6] - (0.5 * y.bandwidth()))
         .attr("rx", 4)
         .attr("ry", 4)
         .attr("width", x.bandwidth())
         .attr("height", y.bandwidth())
-        .style("fill", function (d) { return myColor( d )})
+        .style("fill", function (d) { return myColor(d) })
         .style("stroke-width", 4)
         .style("stroke", "none")
         .style("opacity", 0.8)
@@ -306,34 +307,34 @@
         .on("mousemove", mousemove)
         .on("mouseleave", mouseleave);
 
-    // Add title to graph
-    svg.append("text")
-      .attr("x", 0)
-      .attr("y", -50)
-      .attr("text-anchor", "left")
-      .style("font-size", "22px")
-      .text("Song Feature Heatmap");
+      // Add title to graph
+      svg.append("text")
+        .attr("x", 0)
+        .attr("y", -50)
+        .attr("text-anchor", "left")
+        .style("font-size", "22px")
+        .text("Song Feature Heatmap");
 
-    // Add subtitle to graph
-    svg.append("text")
-      .attr("x", 0)
-      .attr("y", -30)
-      .attr("text-anchor", "left")
-      .style("font-size", "14px")
-      .style("fill", "grey")
-      .style("max-width", 400)
-      .text("Correlations between song features as calculated by Spearman's rank correlation calculation. Blue to red signifies low to high correlation.")
-      .append("tspan")
+      // Add subtitle to graph
+      svg.append("text")
+        .attr("x", 0)
+        .attr("y", -30)
+        .attr("text-anchor", "left")
+        .style("font-size", "14px")
+        .style("fill", "grey")
+        .style("max-width", 400)
+        .text("Correlations between song features as calculated by Spearman's rank correlation calculation. Blue to red signifies low to high correlation.")
+        .append("tspan")
         .attr("dy", "1.2em")
         .attr("x", 0)
         .text("Correlation calculation values are available below the heatmap as you hover over each individual cell.");
 
-    }) ();
+    })();
 
 
   </script>
-  
-  
-  </body>
-  
-  </html>
+
+
+</body>
+
+</html>

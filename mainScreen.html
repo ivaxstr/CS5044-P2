@@ -12,13 +12,17 @@
 
     <style>
         /* Style the div that contains the bar chart */
-        /* #my_barchart {
+        #layout {
             width: 600px;
             height: 400px;
-        } */
+        }
         rect {
             fill: #69b3a2;
         }
+        svg {
+          position: absolute;
+        }
+
     </style>
 
 </head>
@@ -27,17 +31,36 @@
 <body>
     <h2>Top 100 All-Time Most Streamed Songs on Spotify</h2>
     <!-- Create a div where the visualizations will take place -->
-    <div id="layout"></div>
+    <!-- <div id="layout"></div> -->
+    <svg width="1000" height="750" x="0" y="0">
+      <rect x = "0" y = "0" width = "250" height = "250">
+      </rect>
+      <text x = "10" y = "27" stroke = "black">
+        Filter Selection
+      </text>
+      <rect x = "260" y = "0" width = "250" height = "250">
+      </rect>
+      <text x = "270" y = "27" stroke = "black">
+        Main Visualization
+      </text>
+    </svg>
 
-    <script>
+    <svg width="500" height="500" x="250px" y="0">
+      <rect x = "260" y = "0" width = "250" height = "250" fill="black">
+      </rect>
+      <text x = "10" y = "27" stroke = "black">
+        Filter Selection
+      </text>
+    </svg>
+    <!-- <script>
 
         // set the dimensions and margins
         var margin = {top: 30, right: 30, bottom: 70, left: 60},
             width = 700 - margin.left - margin.right,
             height = 400 - margin.top - margin.bottom;
 
-        const screenWidth = document.documentElement.clientWidth;
-        const screenHeight = document.documentElement.clientHeight;
+        let screenWidth = document.documentElement.clientWidth;
+        let screenHeight = document.documentElement.clientHeight;
 
         console.log(screenWidth, screenHeight)
         
@@ -48,17 +71,37 @@
             .attr("class", "filter")
             .attr("width", screenWidth/3)
             .attr("height", screenHeight/3)
-            .attr("transform","translate(" + 0 + "," + -75 + ")")
-            .append("rect")
-              .attr("width", screenWidth/3)
-              .attr("height", screenHeight/3)
-              .style("fill", "black")
-              .append("text") // text doesn't show up for some reason
-                .style("font-size", "100px")
-                .style("fill", "green")
-                .text("Filters")
-                  .attr("x", 0)
-                  .attr("y", 0)
+            // .attr("viewbox", "0 0 " + screenWidth/3 + " " + screenHeight/3)
+            // .attr("align", "top")
+            // .attr("transform","translate(" + 0 + "," + -75 + ")")
+            // .append("rect")
+            //   .attr("width", screenWidth/3)
+            //   .attr("height", screenHeight/3)
+            //   .style("fill", "white")
+            //   .append("text") // text doesn't show up for some reason
+            //     .style("font-size", "100px")
+            //     .style("stroke", "green")
+            //     .text("Filters")
+            //       .attr("x", 0)
+            //       .attr("y", 0)
+        
+        var g_filter = svg_filter.append("g")
+          .attr("width", screenWidth/3)
+          .attr("height", screenHeight/3)
+          .attr("transform", (d,i) => "translate(0,0)")
+
+        var filterSect = g_filter.append("rect")
+          .attr("width", screenWidth/3)
+          .attr("height", screenHeight/3)
+          .attr("y", 0)
+          .attr("fill", "green")
+          .attr("opacity", 0.5);
+
+          g_filter.append("text")
+            .attr("x", 100)
+            .attr("y", 0)
+            .attr("stroke", "black")
+            .text("Filter Section")
 
               // tried calling slider here
 
@@ -94,7 +137,7 @@
                 .attr("transform",
                     "translate(" + margin.left + "," + margin.top + ")");
 
-        </script>
+        </script> -->
 
 </body>
 
