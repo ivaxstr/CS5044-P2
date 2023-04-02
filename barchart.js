@@ -248,9 +248,38 @@ function sortData(data, menuItem) {
     console.log(data);
     console.log(menuItem);
     let filteredData = JSON.parse(JSON.stringify(data));
-    const sortedData = filteredData.sort((a, b) => d3.ascending(a.Danceability, b.Danceability));
-    console.log(sortedData);
-    return sortedData;
+
+    var sortedData = [];
+
+    if (menuItem == "Streams") {
+        sortedData = filteredData.sort((a, b) => d3.descending(a.Streams, b.Streams));
+    }
+    else if (menuItem == "Acousticness") {
+        sortedData = filteredData.sort((a, b) => d3.ascending(a.Acousticness, b.Acousticness));
+    }
+    else if (menuItem == "Danceability") {
+        sortedData = filteredData.sort((a, b) => d3.ascending(a.Danceability, b.Danceability));
+    } 
+    else if (menuItem == "Energy") {
+        sortedData = filteredData.sort((a, b) => d3.ascending(a.Energy, b.Energy));
+    }
+    else if (menuItem == "Instrumentalness") {
+        sortedData = filteredData.sort((a, b) => d3.ascending(a.Instrumentalness, b.Instrumentalness));
+    }
+    else if (menuItem == "Liveness") {
+        sortedData = filteredData.sort((a, b) => d3.ascending(a.Liveness, b.Liveness));
+    }
+    else if (menuItem == "Speechiness") {
+        sortedData = filteredData.sort((a, b) => d3.ascending(a.Speechiness, b.Speechiness));
+    }
+    else if (menuItem == "Valence") {
+        sortedData = filteredData.sort((a, b) => d3.ascending(a.Valence, b.Valence));
+    }
+
+    if (sortedData != undefined) {
+        console.log(sortedData);
+        return sortedData;
+    }
 }
 
 function updateData(data) {
