@@ -1,0 +1,45 @@
+Introduction:
+Our Spotify's Top 100 Most Streamed Songs (All-Time) visualization allows you to view songs by ten different
+song features: Acousticness, Danceability, Energy, Instrumentalness, Liveness, Speechiness, Valence, Duration,
+Loudness and Tempo, and compare those song features to number of streams. The dataset for this visualization is
+linked here: https://www.kaggle.com/datasets/amaanansari09/most-streamed-songs-all-time.
+
+Acousticness, Danceability, Energy, Instrumentalness, Liveness, Speechiness and Valence are song features with a
+value from [0,1]. The descriptions for each feature are listed below. For more information on each feature, you 
+can consult this link: https://www.kaggle.com/code/ludovicocuoghi/spotify-top-100-streamed-songs-analysis.
+
+Acousticness: [0–1] Confidence measure of whether the track is acoustic.
+Danceability: [0–1] Describes how suitable a track is for dancing based on musical attributes including tempo, 
+	      rhythm, stability, beat strength, and overall regularity.
+Energy: [0–1] Perceptual measure of intensity and activity. Energetic tracks feel fast, loud, and noisy.
+Instrumentalness: [0–1] Predicts whether a track contains no vocals (values above 0.5 represent instrumental
+		  tracks whereas rap songs would have a score close to 0).
+Liveness: [0–1] Detects the presence of an audience in the recording.
+Speechiness: [0–1] Detects the presence of spoken words in a track (values above 0.66 describe tracks that are
+	     probably made entirely of spoken words, 0.33–0.66 describe tracks that may contain both music and 
+	     speech, and values below 0.33 most likely represent music and other non-speech-like tracks).
+Valence: [0–1] Describes the musical positiveness conveyed by a track. Tracks with high valence sound more positive
+	 (e.g. happy, cheerful, euphoric), while tracks with low valence sound more negative (e.g. sad, depressed, angry).
+
+Duration, Loudness and Tempo are on different scales and are represented by the color gradient in the bar 
+graph visualization. These feature descriptions are below.
+
+Duration: [Minutes in decimal] How long the track is.
+Loudness: [-60–0 dB] The average volume across an entire track.
+Tempo: [0–300 BPM] The speed or pace of a given piece, as derived from the estimated average beat duration.
+
+How to Interact with our Visualization:
+Choose Duration, Loudness or Tempo to see how specific songs in the top 100 rank in the bar graph. You can then
+sort the songs in the bar graph by the [0,1] features. Use the song release date and stream number sliders to
+filter the data. Hovering over the chart will give you a pop-up to provide more details on the specific song.
+
+Heatmap Interaction:
+To see how the [0,1] song features correlate to each other, you can see our heatmap visualization here: <link>.
+Hovering over an individual cell highlights the pertaining cell and displays details of the cell’s correlation
+value in the text pop-up on the bottom. Could you have predicted which song features were more correlated to 
+each other?
+
+Dataset Considerations:
+(1) This dataset was most recently updated early March 2023. Spotify's top 100 streamed songs may have changed.
+(2) Spotify was founded in 2006. A balance between more recent songs having higher streams and having enough time to
+gain popularity should be considered when analyzing this dataset.
