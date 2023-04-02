@@ -186,7 +186,7 @@
 
       const corr_matrix = [
         {
-          "A to D": corr_test[0]
+          "A to A": corr_test[0]
         },
         {
           "A to D": corr_test[1]
@@ -240,7 +240,7 @@
       }
       const mousemove = function (event, d) {
         tooltip
-          .html("The exact value of<br>this cell is: " + corr_test)
+          .html(`The exact value of<br>this cell is: ${corr_test[i]}`) // fix
           .style("left", (event.x) / 2 + "px")
           .style("top", (event.y) / 2 + "px")
       }
