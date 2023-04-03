@@ -300,7 +300,7 @@ function initialiseVis(data) {
                     })
                     .attr("y", event.y - 50)
                     .attr("width", 200)
-                    .attr("height", 90);
+                    .attr("height", 110);
                 d3.select("svg")
                     .append("text")
                     .attr("class", "tooltip")
@@ -333,7 +333,7 @@ function initialiseVis(data) {
                         else {return event.x + 10;}
                     })
                     .attr("y", event.y + 10)
-                    .text("Streams: " + d.Streams);
+                    .text("Release Year: " + d.YearofReleaseDate);
                 d3.select("svg")
                     .append("text")
                     .attr("class", "tooltip")
@@ -344,6 +344,17 @@ function initialiseVis(data) {
                         else {return event.x + 10;}
                     })
                     .attr("y", event.y + 30)
+                    .text("Streams: " + d.Streams);
+                d3.select("svg")
+                    .append("text")
+                    .attr("class", "tooltip")
+                    .attr("x", function() {
+                        if (event.x > width - 200) {
+                            return width - 200 + 10;
+                        }
+                        else {return event.x + 10;}
+                    })
+                    .attr("y", event.y + 50)
                     .text(selection + ": " + d[selection]);
             
             })
