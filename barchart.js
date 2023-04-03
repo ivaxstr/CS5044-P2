@@ -188,8 +188,8 @@ function initialiseVis(data) {
         .attr("id", "legendMaxLabel")
         .attr("x", 180)
         .attr("y", 45)
-        .text(maxDuration + " minutes"); // also change according to attribute
-
+        .text(maxDuration + " minutes") // also change according to attribute
+    
     // define x and y scales 
     // X axis: scale and draw:
     var x = d3.scaleBand()
@@ -215,14 +215,14 @@ function initialiseVis(data) {
     svg.append("text")
         .attr("text-anchor", "end")
         .attr("x", width / 2 + margin.left)
-        .attr("y", height + margin.top + 40)
+        .attr("y", height + margin.top + 50)
         .text("Song Title");
 
     svg.append("text")
         .attr("text-anchor", "end")
         .attr("transform", "rotate(-90)")
         .attr("y", -margin.left + 20)
-        .attr("x", -margin.top)
+        .attr("x", -margin.top - 80)
         .text("Streams (in billions)");
 
     // Horizontal slider
@@ -304,7 +304,7 @@ function initialiseVis(data) {
                         else {return event.x + 10;}
                     })
                     .attr("y", event.y + 30)
-                    .text("Duration: " + d.Duration);
+                    .text(selection + ": " + d[selection]);
             
             })
             .on("mouseout", function (event, d) {	// if the mouse exits a rectangle
