@@ -380,25 +380,25 @@ function sortData(data, menuItem) {
         sortedData = filteredData.sort((a, b) => d3.descending(a.Streams, b.Streams));
     }
     else if (menuItem == "Acousticness") {
-        sortedData = filteredData.sort((a, b) => d3.ascending(a.Acousticness, b.Acousticness));
+        sortedData = filteredData.sort((a, b) => d3.descending(a.Acousticness, b.Acousticness));
     }
     else if (menuItem == "Danceability") {
-        sortedData = filteredData.sort((a, b) => d3.ascending(a.Danceability, b.Danceability));
+        sortedData = filteredData.sort((a, b) => d3.descending(a.Danceability, b.Danceability));
     } 
     else if (menuItem == "Energy") {
-        sortedData = filteredData.sort((a, b) => d3.ascending(a.Energy, b.Energy));
+        sortedData = filteredData.sort((a, b) => d3.descending(a.Energy, b.Energy));
     }
     else if (menuItem == "Instrumentalness") {
-        sortedData = filteredData.sort((a, b) => d3.ascending(a.Instrumentalness, b.Instrumentalness));
+        sortedData = filteredData.sort((a, b) => d3.descending(a.Instrumentalness, b.Instrumentalness));
     }
     else if (menuItem == "Liveness") {
-        sortedData = filteredData.sort((a, b) => d3.ascending(a.Liveness, b.Liveness));
+        sortedData = filteredData.sort((a, b) => d3.descending(a.Liveness, b.Liveness));
     }
     else if (menuItem == "Speechiness") {
-        sortedData = filteredData.sort((a, b) => d3.ascending(a.Speechiness, b.Speechiness));
+        sortedData = filteredData.sort((a, b) => d3.descending(a.Speechiness, b.Speechiness));
     }
     else if (menuItem == "Valence") {
-        sortedData = filteredData.sort((a, b) => d3.ascending(a.Valence, b.Valence));
+        sortedData = filteredData.sort((a, b) => d3.descending(a.Valence, b.Valence));
     }
 
     if (sortedData != undefined) {
