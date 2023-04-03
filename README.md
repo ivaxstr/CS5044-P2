@@ -1,7 +1,8 @@
 # CS5044-P2
-Our D3 project yeet 
 
-Heatmap:
-Spearman correlation calculation used and values mapped to color gradient from blue to red. Blue signifies low correlation and red signifies high correlation (1 = highest correlation value). Hover-over individual cell allows for a pop-up text on the bottom of the heatmap that reveals the correlation calculation value.
+Access our visualization by using the CS host server:
+https://<username>.host.cs.st-andrews.ac.uk/CS5044-P2/barchart.html
 
-Use this visualization to see to what degree certain song features are correlated to each other.
+Our username links are below:
+https://vbtt1.host.cs.st-andrews.ac.uk/CS5044-P2/barchart.html
+https://is82.host.cs.st-andrews.ac.uk/CS5044-P2/barchart.html
