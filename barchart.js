@@ -1,4 +1,4 @@
-
+// const sliders = require("./archive/sliders");
 
 // set the dimensions and margins of the graph
 var margin = {top: 30, right: 30, bottom: 120, left: 60},
@@ -229,8 +229,13 @@ function initialiseVis(data) {
     // d3.select("#sliders").append("text").text("sliders here:");
     // d3.select("#sliders").call(d3.slider().axis(true));
 
-
-    
+    // // <h2>Range Slider with event, values: <span id="slider3textmin">10</span>, <span id="slider3textmax">25</span></h2>
+    // d3.select('#slider3').call(
+    //     sliders().axis(true).value( [ 10, 25 ] ))
+    //     .on("slide", function(evt, value) {
+    // d3.select('#slider3textmin').text(value[ 0 ]);
+    // d3.select('#slider3textmax').text(value[ 1 ]);
+    // })
     
 
 
