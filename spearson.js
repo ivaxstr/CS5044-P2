@@ -1,3 +1,7 @@
+/*
+* Spearson correlation calculation from https://github.com/agrueneberg/Spearson/tree/gh-pages/lib
+*/
+
 (function (exports) {
     "use strict";
 

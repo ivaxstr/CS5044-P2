@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+
+<!-- Add a svg area, empty -->
+<div id="viz_area"></div>
+
+<!-- Load d3.js -->
+<script src="https://d3js.org/d3.v4.js"></script>
+
+<script>
+    // set the dimensions and margins of the graph
+    var margin = {top: 10, right: 20, bottom: 30, left: 30},
+        width = 450 - margin.left - margin.right,               // width = 400
+        height = 400 - margin.top - margin.bottom;              // height = 360
+
+    console.log(width, height)
+    
+    // Select the svg area
+    var svg = d3.select("#viz_area")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    
+    // Create a scale: transform value in pixel
+    var x = d3.scaleLinear()
+        .domain([0, 100])       // This is the min and the max of the data: 0 to 100 if percentages,
+                                // domain of the dataset.
+        .range([0, width]);       // This is the corresponding value I want in Pixel.
+                                // Try console.log( x(25) ) to see what this x function does.
+
+    var y = d3.scaleLinear()
+        .domain([0, 100])
+        .range([0, height])
+
+    svg.call(d3.axisBottom(x))
+    
+    // Add 3 dots for 0, 50 and 100%
+    svg.append("circle")
+      .attr("cx", x(10)).attr("cy", y(20)).attr("r", 40).style("fill", "blue");
+    svg.append("circle")
+      .attr("cx", x(50)).attr("cy", y(50)).attr("r", 40).style("fill", "red");
+    svg.append("circle")
+      .attr("cx", x(90)).attr("cy", y(90)).attr("r", 40).style("fill", "green");
+    
+    console.log(x(90)) // This logs the scaled px value that is associated with the domain value
+                        // x(domain=0) maps to range = 0px, x(100) maps to 400px, x(400) maps to 1600px --> x4 of domain max
+                        // mapping [domain => range] = [0 => 0] [25 => 100] [50 => 200] [100 => 400] [400 => 1600]
+</script>

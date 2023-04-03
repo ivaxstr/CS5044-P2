@@ -26,7 +26,16 @@
   <!-- Load color palettes -->
   <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 
+  <!-- Load spearson correlation calculation from https://github.com/agrueneberg/Spearson/tree/gh-pages/lib -->
   <script src="spearson.js"></script>
+
+  <!-- References used to construct heatmap -->
+  <p><b>References:</b></p>
+  <!-- Reference code for spearson calculation: https://d3-graph-gallery.com/heatmap -->
+  <a href="https://github.com/agrueneberg/Spearson/tree/gh-pages/lib">Spearson correlation calculation source code</a>
+  <br></br>
+  <!-- Reference code for heatmap: https://d3-graph-gallery.com/heatmap -->
+  <a href="https://d3-graph-gallery.com/heatmap">Heatmap reference</a>
 
   <!-- Start of JavaScript code -->
   <script>
@@ -34,40 +43,41 @@
     // Set the dimensions and margins of the graph
     const margin = { top: 75, right: 0, bottom: 30, left: 150 },
       width = 1000 - margin.left - margin.right,
-      height = 750 - margin.top - margin.bottom;
+      height = 800 - margin.top - margin.bottom;
 
     // Append the svg object to the body of the page
     const svg = d3.select("#myDiv")
       .append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
       .append("g")  // groups svg elements together
-        .attr("transform", `translate(${margin.left},${margin.top})`);
+      .attr("transform", `translate(${margin.left},${margin.top})`);
+
     // Read the data
     (async () => {
 
-      //filepath where the data is stored
+      // Filepath where the data is stored
       const datapath = "Song Features & Streams.csv";
 
-      //read in the data using d3
+      // Read in the data using d3
       const data = await d3.csv(datapath);
 
-      //"data" is the variable that contains the data, if the csv loaded correctly
+      // "data" is the variable that contains the data, if the csv loaded correctly
       //console.log("Song Data: ", data);
 
       // Labels of row and columns -> identifiers for each axis
       const songFeatures_x = ["Acousticness", "Danceability", "Energy", "Instrumentalness", "Liveness", "Tempo", "Valence"];
       const songFeatures_y = ["Acousticness", "Danceability", "Energy", "Instrumentalness", "Liveness", "Tempo", "Valence"];
-  
+
       // Song feature values
       const acousticVals = data.map(d => d.Acousticness)
       const danceVals = data.map(d => d.Danceability)
       const energyVals = data.map(d => d.Energy)
-      const instrumVals = data.map((d,i) => {
+      const instrumVals = data.map((d, i) => {
         if (i < 100) {
-            return d.Instrumentalness[i];
+          return d.Instrumentalness[i]; // values of instrumentalness can be very small (9e-5), this ensures the whole numeric return
         }
-        }
+      }
       )
       const liveVals = data.map(d => d.Liveness)
       const tempoVals = data.map(d => d.Tempo)
@@ -75,16 +85,16 @@
 
       // Array of song feature values (array of an array)
       const fVals = [
-        [acousticVals], 
+        [acousticVals],
         [danceVals],
-        [energyVals], 
-        [instrumVals], 
-        [liveVals], 
-        [tempoVals], 
+        [energyVals],
+        [instrumVals],
+        [liveVals],
+        [tempoVals],
         [valenceVals]
       ];
       //console.log("Feature Values: ", fVals);
-      
+
       // Correlation calculations
       const corr = [];
       for (i = 0; i < songFeatures_x.length; i++) {
@@ -94,7 +104,7 @@
           }
           corr[i][j] = spearson.correlation.spearman(fVals[i][0], fVals[j][0])
         }
-      } 
+      }
       //console.log("Correlation matrix: ", corr);
 
       // Build X scales and axis:
@@ -103,7 +113,7 @@
         .domain(songFeatures_x)
         .padding(0.05);
       svg.append("g")
-        .attr("class","x_ticks")
+        .attr("class", "x_ticks")
         .style("font-size", 15)
         .attr("transform", `translate(0, ${height})`)
         .call(d3.axisBottom(x).tickSize(10))
@@ -118,16 +128,16 @@
         .style("font-size", 15)
         .call(d3.axisLeft(y).tickSize(10))
 
-      // Store y_axis tick marks
+      // Store y_axis tick mark positions
       const y_tickPos = [];
 
       d3.selectAll(".y_ticks")
         .selectAll(".tick")
-        .each( function (d) {
+        .each(function (d) {
           let tick = d3.select(this);
-          let transform = tick.attr("transform").replace("(","").replace(")","").split(",")[1];
+          let transform = tick.attr("transform").replace("(", "").replace(")", "").split(",")[1];
           y_tickPos.push(transform)
-          }
+        }
         )
       //console.log(y_tickPos)
 
@@ -136,8 +146,51 @@
       const corr_max = d3.max(corr, (c) => d3.max(c));
 
       const myColor = d3.scaleLinear()
-        .range(['#0000ff','#ff0000']) // blue, red
+        .range(['#0000ff', '#ff0000']) // blue, red
         .domain([corr_min, corr_max])
+
+      // append legend svg object to the div
+      var legend = d3.select("#myDiv")
+      .append("svg")
+      .attr("transform", "translate(-625,-760)")
+      .attr("width", 240)
+      .attr("height", 60)
+      .append("g")
+
+      legend.append("defs");
+      var gradient = legend.select("defs")
+        .append("linearGradient")
+        .attr("id", "linear-gradient")
+        .attr("x1", "0%")
+        .attr("y1", "0%")
+        .attr("x2", "100%")
+        .attr("y2", "0%");
+      gradient.append("stop")
+        .attr("offset", "0%")
+        .attr("stop-color", "blue");
+      gradient.append("stop")
+        .attr("id", "gradientStop")
+        .attr("offset", "100%")
+        .attr("stop-color", "red");
+
+      legend.append("rect")
+        .attr("x", 10)
+        .attr("y", 10)
+        .attr("width", 180)
+        .attr("height", 20)
+        .style("stroke", "black")
+        .style("fill", "url(#linear-gradient)");
+
+      // label each end of the legend rectangle
+      legend.append("text")
+        .attr("x", 10)
+        .attr("y", 45)
+        .text(d3.format(".2f")(corr_min));
+      legend.append("text")
+        .attr("id", "legendMaxLabel")
+        .attr("x", 190)
+        .attr("y", 45)
+        .text(corr_max);
 
       //console.log("[Max, Min] of Correlation Matrix: ", [corr_min, corr_max]);
 
@@ -151,8 +204,7 @@
         .style("border-width", "2px")
         .style("border-radius", "5px")
         .style("padding", "5px")
-        
-        console.log(svg.attr("width"))
+
       // Three function that change the tooltip when user hover / move / leave a cell
       const mouseover = function (event, d) {
         tooltip
@@ -164,9 +216,9 @@
       const mousemove = function (event, d) {
         tooltip
           .text(`Correlation calculation of this cell is: ${d}`)
-          .style("left", (event.x) + "px") // these don't make any changes...
+          .style("left", (event.x) + "px")
           .style("top", (event.y) + "px")
-          .style("width", "1000px") // edit this to make it the width of the heatmap svg
+          .style("width", "1000px")
       }
       const mouseleave = function (event, d) {
         tooltip
@@ -175,20 +227,20 @@
           .style("stroke", "none")
           .style("opacity", 0.8)
       }
-      
+
       // There should be a more elegant way to do this, but so far y-position of the correlation matrix row data
-      // is hardcoded.
+      // is extracted from y_tickPos (which stores the y tickmark positions).
 
       svg.selectAll()
-        .data( corr[0] )
+        .data(corr[0])
         .join("rect")
-        .attr("x", (d,i) => x(songFeatures_x[i]))
-        .attr("y", (d) => y_tickPos[0] - (0.5*y.bandwidth()))
+        .attr("x", (d, i) => x(songFeatures_x[i]))
+        .attr("y", (d) => y_tickPos[0] - (0.5 * y.bandwidth()))
         .attr("rx", 4)
         .attr("ry", 4)
         .attr("width", x.bandwidth())
         .attr("height", y.bandwidth())
-        .style("fill", function (d) { return myColor( d )})
+        .style("fill", function (d) { return myColor(d) })
         .style("stroke-width", 4)
         .style("stroke", "none")
         .style("opacity", 0.8)
@@ -197,16 +249,16 @@
         .on("mousemove", mousemove)
         .on("mouseleave", mouseleave);
 
-        svg.selectAll()
-        .data( corr[1] )
+      svg.selectAll()
+        .data(corr[1])
         .join("rect")
-        .attr("x", (d,i) => x(songFeatures_x[i]))
-        .attr("y", (d) => y_tickPos[1] - (0.5*y.bandwidth()))
+        .attr("x", (d, i) => x(songFeatures_x[i]))
+        .attr("y", (d) => y_tickPos[1] - (0.5 * y.bandwidth()))
         .attr("rx", 4)
         .attr("ry", 4)
         .attr("width", x.bandwidth())
         .attr("height", y.bandwidth())
-        .style("fill", function (d) { return myColor( d )})
+        .style("fill", function (d) { return myColor(d) })
         .style("stroke-width", 4)
         .style("stroke", "none")
         .style("opacity", 0.8)
@@ -215,16 +267,16 @@
         .on("mousemove", mousemove)
         .on("mouseleave", mouseleave);
 
-        svg.selectAll()
-        .data( corr[2] )
+      svg.selectAll()
+        .data(corr[2])
         .join("rect")
-        .attr("x", (d,i) => x(songFeatures_x[i]))
-        .attr("y", (d) => y_tickPos[2] - (0.5*y.bandwidth()))
+        .attr("x", (d, i) => x(songFeatures_x[i]))
+        .attr("y", (d) => y_tickPos[2] - (0.5 * y.bandwidth()))
         .attr("rx", 4)
         .attr("ry", 4)
         .attr("width", x.bandwidth())
         .attr("height", y.bandwidth())
-        .style("fill", function (d) { return myColor( d )})
+        .style("fill", function (d) { return myColor(d) })
         .style("stroke-width", 4)
         .style("stroke", "none")
         .style("opacity", 0.8)
@@ -234,16 +286,16 @@
         .on("mousemove", mousemove)
         .on("mouseleave", mouseleave);
 
-        svg.selectAll()
-        .data( corr[3] )
+      svg.selectAll()
+        .data(corr[3])
         .join("rect")
-        .attr("x", (d,i) => x(songFeatures_x[i]))
-        .attr("y", (d) => y_tickPos[3] - (0.5*y.bandwidth()))
+        .attr("x", (d, i) => x(songFeatures_x[i]))
+        .attr("y", (d) => y_tickPos[3] - (0.5 * y.bandwidth()))
         .attr("rx", 4)
         .attr("ry", 4)
         .attr("width", x.bandwidth())
         .attr("height", y.bandwidth())
-        .style("fill", function (d) { return myColor( d )})
+        .style("fill", function (d) { return myColor(d) })
         .style("stroke-width", 4)
         .style("stroke", "none")
         .style("opacity", 0.8)
@@ -252,16 +304,16 @@
         .on("mousemove", mousemove)
         .on("mouseleave", mouseleave);
 
-        svg.selectAll()
-        .data( corr[4] )
+      svg.selectAll()
+        .data(corr[4])
         .join("rect")
-        .attr("x", (d,i) => x(songFeatures_x[i]))
-        .attr("y", (d) => y_tickPos[4] - (0.5*y.bandwidth()))
+        .attr("x", (d, i) => x(songFeatures_x[i]))
+        .attr("y", (d) => y_tickPos[4] - (0.5 * y.bandwidth()))
         .attr("rx", 4)
         .attr("ry", 4)
         .attr("width", x.bandwidth())
         .attr("height", y.bandwidth())
-        .style("fill", function (d) { return myColor( d )})
+        .style("fill", function (d) { return myColor(d) })
         .style("stroke-width", 4)
         .style("stroke", "none")
         .style("opacity", 0.8)
@@ -270,16 +322,16 @@
         .on("mousemove", mousemove)
         .on("mouseleave", mouseleave);
 
-        svg.selectAll()
-        .data( corr[5] )
+      svg.selectAll()
+        .data(corr[5])
         .join("rect")
-        .attr("x", (d,i) => x(songFeatures_x[i]))
-        .attr("y", (d) => y_tickPos[5] - (0.5*y.bandwidth()))
+        .attr("x", (d, i) => x(songFeatures_x[i]))
+        .attr("y", (d) => y_tickPos[5] - (0.5 * y.bandwidth()))
         .attr("rx", 4)
         .attr("ry", 4)
         .attr("width", x.bandwidth())
         .attr("height", y.bandwidth())
-        .style("fill", function (d) { return myColor( d )})
+        .style("fill", function (d) { return myColor(d) })
         .style("stroke-width", 4)
         .style("stroke", "none")
         .style("opacity", 0.8)
@@ -288,16 +340,16 @@
         .on("mousemove", mousemove)
         .on("mouseleave", mouseleave);
 
-        svg.selectAll()
-        .data( corr[6] )
+      svg.selectAll()
+        .data(corr[6])
         .join("rect")
-        .attr("x", (d,i) => x(songFeatures_x[i]))
-        .attr("y", (d) => y_tickPos[6] - (0.5*y.bandwidth()))
+        .attr("x", (d, i) => x(songFeatures_x[i]))
+        .attr("y", (d) => y_tickPos[6] - (0.5 * y.bandwidth()))
         .attr("rx", 4)
         .attr("ry", 4)
         .attr("width", x.bandwidth())
         .attr("height", y.bandwidth())
-        .style("fill", function (d) { return myColor( d )})
+        .style("fill", function (d) { return myColor(d) })
         .style("stroke-width", 4)
         .style("stroke", "none")
         .style("opacity", 0.8)
@@ -306,34 +358,31 @@
         .on("mousemove", mousemove)
         .on("mouseleave", mouseleave);
 
-    // Add title to graph
-    svg.append("text")
-      .attr("x", 0)
-      .attr("y", -50)
-      .attr("text-anchor", "left")
-      .style("font-size", "22px")
-      .text("Song Feature Heatmap");
+      // Add title to graph
+      svg.append("text")
+        .attr("x", 0)
+        .attr("y", -50)
+        .attr("text-anchor", "left")
+        .style("font-size", "22px")
+        .text("Song Feature Heatmap");
 
-    // Add subtitle to graph
-    svg.append("text")
-      .attr("x", 0)
-      .attr("y", -30)
-      .attr("text-anchor", "left")
-      .style("font-size", "14px")
-      .style("fill", "grey")
-      .style("max-width", 400)
-      .text("Correlations between song features as calculated by Spearman's rank correlation calculation. Blue to red signifies low to high correlation.")
-      .append("tspan")
+      // Add subtitle to graph
+      svg.append("text")
+        .attr("x", 0)
+        .attr("y", -30)
+        .attr("text-anchor", "left")
+        .style("font-size", "14px")
+        .style("fill", "grey")
+        .style("max-width", 400)
+        .text("Correlations between song features as calculated by Spearman's rank correlation calculation. Blue to red signifies low to high correlation.")
+        .append("tspan")
         .attr("dy", "1.2em")
         .attr("x", 0)
         .text("Correlation calculation values are available below the heatmap as you hover over each individual cell.");
-
-    }) ();
-
+    })();
 
   </script>
-  
-  
-  </body>
-  
-  </html>
+
+</body>
+
+</html>
