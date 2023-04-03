@@ -1,3 +1,5 @@
+
+
 // set the dimensions and margins of the graph
 var margin = {top: 30, right: 30, bottom: 120, left: 60},
 width = 700 - margin.left - margin.right,
@@ -14,15 +16,18 @@ var svg = d3.select("#my_barchart")
 // append legend svg object to the right div
 var legend = d3.select("#colourScaleLegend")
 .append("svg")
-.attr("width", 240)
+.attr("width", 280)
 .attr("height", 60)
 .append("g");
 
 // array of attributes to choose from to colour the bars
 var colourAttributes = ["Duration", "Loudness", "Tempo"];
-var colours = ["green", "orange", "red"];
+var colours = ["green", "orange", "#db0000"];
 var selectedColourAttribute = "green";
 var selectedColour = 0; 
+
+var selection = "Duration";
+var colourDuration2 = d3.scaleLinear().domain([0, 300]).range(["white", selectedColourAttribute]);
 
 
 // array of attributes to choose from to sort the bars
@@ -75,19 +80,22 @@ function initialiseVis(data) {
     var maxLoudness = d3.max(data, function(d) { return d.Loudness; });
     var maxTempo = d3.max(data, function(d) { return d.Tempo; });
     var minTempo = d3.min(data, function(d) { return d.Tempo; });
+    console.log(minTempo);
+    
 
     // define onchange functions for dropdown menus
     dropDownMenuColours.on('change', function (e, d) {
-        console.log("the change is being detected");
+        
         const menuItem = d3.select(this) // "this" only has correct context if you use oldschool function declaration.
             .select("select")
             .property("value");
 
-        console.log(menuItem);
 
         // updating legends & bar colours
 
         legend.selectAll("#legendMaxLabel").remove();
+
+        selection = menuItem;
 
         if (menuItem == "Duration") {
             selectedColourAttribute = colours[0];
@@ -97,7 +105,7 @@ function initialiseVis(data) {
             .transition()
             .duration(400)
             .style("fill", function(d) { return colorDuration(d.Duration); });
-            legend.append("text").attr("id", "legendMaxLabel").attr("x", 190).attr("y", 45).text(maxDuration);
+            legend.append("text").attr("id", "legendMaxLabel").attr("x", 180).attr("y", 45).text(maxDuration + " minutes");
         } else if (menuItem == "Loudness") {
             selectedColourAttribute = colours[1];
             selectedColour = 1;
@@ -106,17 +114,19 @@ function initialiseVis(data) {
             .transition()
             .duration(400)
             .style("fill", function(d) { return colorDuration(d.Loudness); });
-            legend.append("text").attr("id", "legendMaxLabel").attr("x", 190).attr("y", 45).text(maxLoudness);
+            legend.append("text").attr("id", "legendMaxLabel").attr("x", 180).attr("y", 45).text(maxLoudness + " dB");
         } else if (menuItem == "Tempo") {
             selectedColourAttribute = colours[2];
             selectedColour = 2;
-            colorDuration = d3.scaleLinear().domain([minTempo, maxTempo]).range(["white", selectedColourAttribute]);
+            colorDuration = d3.scaleLinear().domain([0, 180]).range(["white", selectedColourAttribute]);
             svg.selectAll("rect")
             .transition()
             .duration(400)
             .style("fill", function(d) { return colorDuration(d.Tempo); });
-            legend.append("text").attr("id", "legendMaxLabel").attr("x", 190).attr("y", 45).text(maxTempo);
+            legend.append("text").attr("id", "legendMaxLabel").attr("x", 180).attr("y", 45).text("180 BPM");
         }
+        colourDuration2 = colorDuration; // update colourDuration2 to be used in the update data function
+
         gradient.selectAll("#gradientStop").remove();
         gradient.append("stop")
             .attr("id", "gradientStop")
@@ -142,6 +152,7 @@ function initialiseVis(data) {
     var colorDuration = d3.scaleLinear()
         .domain([0, maxDuration])
         .range(["white", selectedColourAttribute]);
+    colourDuration2 = colorDuration; // update colourDuration2 to be used in the update data function
     
 
     legend.append("defs");
@@ -175,9 +186,9 @@ function initialiseVis(data) {
         .text("0");
     legend.append("text")
         .attr("id", "legendMaxLabel")
-        .attr("x", 190)
+        .attr("x", 180)
         .attr("y", 45)
-        .text(maxDuration); // also change according to attribute
+        .text(maxDuration + " minutes"); // also change according to attribute
 
     // define x and y scales 
     // X axis: scale and draw:
@@ -214,6 +225,14 @@ function initialiseVis(data) {
         .attr("x", -margin.top)
         .text("Streams (in billions)");
 
+    // Horizontal slider
+    // d3.select("#sliders").append("text").text("sliders here:");
+    // d3.select("#sliders").call(d3.slider().axis(true));
+
+
+    
+    
+
 
     // Bars
     svg.selectAll(".bar")
@@ -224,7 +243,7 @@ function initialiseVis(data) {
             .attr("y", function(d) { return y(d.Streams); })
             .attr("width", x.bandwidth())
             .attr("height", function(d) { return height - y(d.Streams); })
-            .style("fill", function(d) { return colorDuration(d.Duration); })
+            .style("fill", function(d) { return colorDuration(d[selection]); })
             .on("mouseenter", function (event, d) {	// if the mouse enters a rectangle - event returns before data
                 d3.select(this)					// select the element it entered
                     //.style("fill", "#3b665c")	// change its fill colour
@@ -290,9 +309,10 @@ function initialiseVis(data) {
             })
             .on("mouseout", function (event, d) {	// if the mouse exits a rectangle
                 d3.select(this)					// select the element it exited
-                    .style("fill", function(d) { return colorDuration(d.Duration); })		// reset the fill colour
+                    .style("fill", function(d) { return colorDuration(d[selection]); })		// reset the fill colour
                 d3.selectAll(".tooltip")		// select all elements of our class "tooltip"
                     .remove();					// removes all elements
+                
             });
 
 }
@@ -340,14 +360,6 @@ function updateData(data) {
 
     // find the max values for each attribute
     var maxStreams = d3.max(data, function(d) { return d.Streams; });
-    var maxDuration = d3.max(data, function(d) { return d.Duration; });
-    var maxLoudness = d3.max(data, function(d) { return d.Loudness; });
-    var maxTempo = d3.max(data, function(d) { return d.Tempo; });
-    var minTempo = d3.min(data, function(d) { return d.Tempo; });
-
-    var colorDuration = d3.scaleLinear()
-    .domain([0, maxDuration])
-    .range(["white", selectedColourAttribute]);
 
     // Remove old bars
     svg.selectAll("rect").remove();
@@ -384,10 +396,9 @@ function updateData(data) {
             .attr("y", function(d) { return y(d.Streams); })
             .attr("width", x.bandwidth())
             .attr("height", function(d) { return height - y(d.Streams); })
-            .style("fill", function(d) { return colorDuration(d.Duration); })
+            .style("fill", function(d) { return colourDuration2(d[selection]); })
             .on("mouseenter", function (event, d) {	// if the mouse enters a rectangle - event returns before data
                 d3.select(this)					// select the element it entered
-                    //.style("fill", "#3b665c")	// change its fill colour
                     .style("fill", "#363636");
                 d3.select("svg")
                     .append("rect")
@@ -450,10 +461,11 @@ function updateData(data) {
             })
             .on("mouseout", function (event, d) {	// if the mouse exits a rectangle
                 d3.select(this)					// select the element it exited
-                    .style("fill", function(d) { return colorDuration(d.Duration); })		// reset the fill colour
+                    .style("fill", function(d) { return colourDuration2(d[selection]); })		// reset the fill colour
                 d3.selectAll(".tooltip")		// select all elements of our class "tooltip"
                     .remove();					// removes all elements
-   
-             });
+
+            });
+
 
 }

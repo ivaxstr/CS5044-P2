@@ -26,14 +26,23 @@
         <div style="display: flex;">
         <!-- Create a vertical div for the sliders and heatmap -->
         <div id="sliders"></div>
-        <div id="heatmap"></div>
+        <div id="heatmap"><link href="heatmap_vFinal.html" rel="import" /> 
+            <!-- <script>
+                var extern = document.getElementsByTagName("link")[0].import;
+
+                window.addEventListener("load", function() {
+                    document.getElementsByTagName("body")[0].replaceChild(extern.getElementsByTagName("body")[0], document.getElementsByTagName("heatmap")[0]);
+                }, false);
+            </script> -->
+            <!-- <iframe src="heatmap_vFinal.html" title="Heatmap"></iframe> -->
+        </div>
         </div>
 
         <div style="display: flex;">
         <!-- Create a horizontal div where the graph will take place -->
         <div id="my_barchart"></div>
         <div id="dropDownMenuContainer">
-            <p>Colour scale selection</p>
+            <p>Colour by:</p>
             <div id="dropDownMenuColours"></div>
             <div id="colourScaleLegend"></div>
             <p>Sort songs by:</p>
@@ -41,6 +50,7 @@
         </div>
     </div>
 
+    <script src="sliders.js"></script>
     <script src="barchart.js"></script>
 
 </body>
