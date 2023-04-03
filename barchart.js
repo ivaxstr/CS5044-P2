@@ -155,7 +155,7 @@ function initialiseVis(data) {
             .select("select")
             .property("value");
 
-        //selection2 = menuItem;
+        selection2 = menuItem;
 
         const sortedData = sortData(data, menuItem);
         updateData(sortedData);
@@ -182,7 +182,7 @@ function initialiseVis(data) {
         var sliderValue = this.value;
         globalSliderValue = sliderValue;
         console.log(sliderValue);
-        const filteredData = filterData(data, sliderValue);
+        const filteredData = sortData(data, selection2);
         updateData(filteredData);
     }
 
@@ -190,7 +190,7 @@ function initialiseVis(data) {
 
         var sliderValue = this.value;
         globalSliderValue2 = sliderValue;
-        const filteredData = filterData(data);
+        const filteredData = sortData(data, selection2);
         updateData(filteredData);
     }
 
