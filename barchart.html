@@ -7,15 +7,18 @@
     <!-- Load d3.js v7 -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
 
+
     <style>
-        /* Style the div that contains the bar chart */
-        /* #my_barchart {
-            width: 600px;
-            height: 400px;
-        } */
+
         rect {
             fill: #69b3a2;
         }
+        input[type="range"] {
+            appearance: slider-vertical;
+            height: 400px;
+            width: 70px;
+        }
+
     </style>
 
 </head>
@@ -23,23 +26,22 @@
 
 <body>
     <h2>Spotify top 100 songs bar chart</h2>
-        <div style="display: flex;">
-        <!-- Create a vertical div for the sliders and heatmap -->
-        <div id="sliders"></div>
-        <div id="heatmap"><link href="heatmap_vFinal.html" rel="import" /> 
-            <!-- <script>
-                var extern = document.getElementsByTagName("link")[0].import;
-
-                window.addEventListener("load", function() {
-                    document.getElementsByTagName("body")[0].replaceChild(extern.getElementsByTagName("body")[0], document.getElementsByTagName("heatmap")[0]);
-                }, false);
-            </script> -->
-            <!-- <iframe src="heatmap_vFinal.html" title="Heatmap"></iframe> -->
-        </div>
-        </div>
 
         <div style="display: flex;">
         <!-- Create a horizontal div where the graph will take place -->
+        <div style="display: flex;">
+            <!-- Create a div for the sliders and heatmap -->
+            <div id="sliders" style="display: flex; flex-direction: row;">
+                <div id="slider1">
+                    <input type="range" min="1" max="150" id="streamsFilter">
+                    <p>Filter number of streams</p>
+                </div>
+                <div id="slider2"><input type="range" min="1" max="150" id="streamsFilter2"></div>
+            </div>
+            <div id="heatmap">
+                <link href="heatmap_vFinal.html" rel="import" /> 
+            </div>
+            </div>
         <div id="my_barchart"></div>
         <div id="dropDownMenuContainer">
             <p>Colour by:</p>
@@ -50,7 +52,6 @@
         </div>
     </div>
 
-    <script src="sliders.js"></script>
     <script src="barchart.js"></script>
 
 </body>

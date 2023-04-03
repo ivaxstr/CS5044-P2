@@ -32,6 +32,7 @@ var colourDuration2 = d3.scaleLinear().domain([0, 300]).range(["white", selected
 
 // array of attributes to choose from to sort the bars
 var sortAttributes = ["Streams", "Acousticness", "Danceability", "Energy", "Instrumentalness", "Liveness", "Speechiness", "Valence"];
+var selection2 = "Streams";
 
 // get dropdown menu divs
 const dropDownMenuColours = d3.select("#dropDownMenuColours");
@@ -57,6 +58,19 @@ dropDownMenuSort.append("select")
 .text(d => d)
 
 
+var minXAttribute = 0;
+
+// create a slider to filter the number of streams
+// var slider1 = document.querySelector("#streamsFilter");
+// slider1.addEventListener("input", (event) => {
+//     console.log(event.target.output)
+// })
+var slider1 = document.getElementById("streamsFilter");
+var slider2 = document.getElementById("streamsFilter2");
+var globalSliderValue;
+var globalSliderValue2;
+
+
 /////////////////////
 
 
@@ -76,6 +90,7 @@ function initialiseVis(data) {
 
     // find the max values for each attribute
     var maxStreams = d3.max(data, function(d) { return d.Streams; });
+    var minStreams = d3.min(data, function(d) { return d.Streams; });
     var maxDuration = d3.max(data, function(d) { return d.Duration; });
     var maxLoudness = d3.max(data, function(d) { return d.Loudness; });
     var maxTempo = d3.max(data, function(d) { return d.Tempo; });
@@ -136,17 +151,48 @@ function initialiseVis(data) {
     });
 
     dropDownMenuSort.on('change', function (e, d) {
-        console.log("the change is being detected");
         const menuItem = d3.select(this) // "this" only has correct context if you use oldschool function declaration.
             .select("select")
             .property("value");
 
-        console.log(menuItem);
+        //selection2 = menuItem;
 
         const sortedData = sortData(data, menuItem);
         updateData(sortedData);
 
     });
+
+    
+    slider1.min = 0;
+    slider1.value = 3.5;
+    slider1.step = 0.1;
+    slider1.max = 3.5;
+    globalSliderValue = slider1.value;
+    slider2.max = maxStreams;
+    slider2.min = 0;
+    slider2.value = minStreams - 0.1;
+    slider2.step = 0.1;
+    globalSliderValue2 = slider2.value;
+
+    // sort data by streams
+    // slider detects sliding
+    // filter then updates data 
+    slider1.oninput = function() {
+
+        var sliderValue = this.value;
+        globalSliderValue = sliderValue;
+        console.log(sliderValue);
+        const filteredData = filterData(data, sliderValue);
+        updateData(filteredData);
+    }
+
+    slider2.oninput = function() {
+
+        var sliderValue = this.value;
+        globalSliderValue2 = sliderValue;
+        const filteredData = filterData(data);
+        updateData(filteredData);
+    }
 
     // define colour scale & draw its legend
     var colorDuration = d3.scaleLinear()
@@ -225,17 +271,6 @@ function initialiseVis(data) {
         .attr("x", -margin.top - 80)
         .text("Streams (in billions)");
 
-    // Horizontal slider
-    // d3.select("#sliders").append("text").text("sliders here:");
-    // d3.select("#sliders").call(d3.slider().axis(true));
-
-    // // <h2>Range Slider with event, values: <span id="slider3textmin">10</span>, <span id="slider3textmax">25</span></h2>
-    // d3.select('#slider3').call(
-    //     sliders().axis(true).value( [ 10, 25 ] ))
-    //     .on("slide", function(evt, value) {
-    // d3.select('#slider3textmin').text(value[ 0 ]);
-    // d3.select('#slider3textmax').text(value[ 1 ]);
-    // })
     
 
 
@@ -322,11 +357,22 @@ function initialiseVis(data) {
 
 }
 
+// function to filter data based on slider
+function filterData(data) {
+    
+        let filteredData = JSON.parse(JSON.stringify(data));
+    
+        filteredData = filteredData.filter(function(d) {
+            return d.Streams <= globalSliderValue && d.Streams >= globalSliderValue2;
+        });
+    
+        return filteredData;
+}
+
+// function to sort data
 function sortData(data, menuItem) {
-    console.log("sort data is being called");
-    console.log(data);
-    console.log(menuItem);
-    let filteredData = JSON.parse(JSON.stringify(data));
+
+    let filteredData = filterData(data);
 
     var sortedData = [];
 
@@ -461,7 +507,7 @@ function updateData(data) {
                         else {return event.x + 10;}
                     })
                     .attr("y", event.y + 30)
-                    .text("Duration: " + d.Duration);
+                    .text([selection] +": " + d[selection]);
             
             })
             .on("mouseout", function (event, d) {	// if the mouse exits a rectangle
